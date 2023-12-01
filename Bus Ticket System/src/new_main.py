@@ -4,7 +4,6 @@ class demo():
 
 
 
-
 #for main window
     def main_window(self):
         root = Tk()
@@ -71,11 +70,11 @@ class demo():
         placeholder_label = Label(fr3, text="dd-mm-yyyy", fg="red")
         placeholder_label.grid(row=4, column=2)
         def show_bus():
-            Label(fr4, text="Select Bus",font='arial 16 bold').grid(row=0,column=0)
-            Label(fr4, text="Operator",font='arial 16 bold').grid(row=0,column=1)
-            Label(fr4, text="Bus Type",font='arial 16 bold').grid(row=0,column=2)
-            Label(fr4, text="Seat Available",font='arial 16 bold').grid(row=0,column=3)
-            Label(fr4, text="Fare",font='arial 16 bold').grid(row=0,column=4)            
+            Label(fr4, text="Select Bus",font='arial 16 bold', fg='green2').grid(row=0,column=0,padx=10)
+            Label(fr4, text="Operator",font='arial 16 bold', fg='green2').grid(row=0,column=1,padx=10)
+            Label(fr4, text="Bus Type",font='arial 16 bold', fg='green2').grid(row=0,column=2,padx=10)
+            Label(fr4, text="Seat Available",font='arial 16 bold', fg='green2').grid(row=0,column=3,padx=10)
+            Label(fr4, text="Fare",font='arial 16 bold', fg='green2').grid(row=0,column=4,padx=10)            
         show_bus_button = Button(fr3, text="Show Bus",font='arial 12 bold', bg="green2", fg="green4", command=show_bus)
         show_bus_button.grid(row=5, column=2, pady=10)
         def go_back():
@@ -583,11 +582,35 @@ class demo():
         fr2.grid(row=1, column=0, columnspan=10)
         Label(fr1, image=bus).grid(row=0, column=0, padx=w//2.4)
         Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
-        Label(fr2, text='Add New Station', bg='gray20', fg='green3', font='Arial 22 bold').grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
+        t2 = Label(fr2, text='Add Station Details', bg='gray20', fg='green3', font='Arial 22 bold').grid(row=2, column=2, padx=w // 3, pady=20)
         fr3=Frame(root)
         fr3.grid(row=2, column=0, columnspan=10)
         
+        Label(fr3,text="Sation ID", font='arial 12 ').grid(row=0,column=0,padx=10)
+        sId_entry=Entry(fr3)
+        sId_entry.grid(row=0,column=1,padx=10)
         
+        Label(fr3,text="Sation Name", font='arial 12 ').grid(row=0,column=2,padx=10)
+        sName_entry=Entry(fr3)
+        sName_entry.grid(row=0,column=3,padx=10)
+        
+        add_button=Button(fr3,text="Add", bg="green2")
+        add_button.grid(row=0,column=4,padx=10)
+        
+        def go_home():
+            root.destroy()
+            self.main_window()
+        home=PhotoImage(file="../assets/home.png")
+        home_button = Button(fr3,image=home, command=go_home)
+        home_button.grid(row=0,column=5,pady=20,padx=5,sticky='W')
+
+        def go_back():
+            root.destroy()
+            self.admin_only()
+        back_button = Button(fr3,text="Back", command=go_back)
+        back_button.grid(row=0,column=6,pady=20,padx=5,sticky='W')
+        
+        root.mainloop()
 
 
 
