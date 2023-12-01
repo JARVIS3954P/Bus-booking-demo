@@ -26,7 +26,7 @@ class demo():
         button1.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
         def open_check_booked_seat(e=0):
             root.destroy()
-            self.check_booked_seat()
+            self.check_bus_details()
         button2 = Button(fr3, text="Check Booked Seat", font='arial 14 bold', bg="medium sea green", fg="black", command=open_check_booked_seat)
         button2.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
         def open_add_bus_details(e=0):
@@ -36,8 +36,6 @@ class demo():
         button3.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
         Label(fr3, text="For Admin Only", fg="red", font='arial 10').grid(row=3, column=2, pady=5)
         root.mainloop()
-
-
 
 
 #for seat booking
@@ -88,14 +86,42 @@ class demo():
         root.mainloop()
 
 
-
-
 #for checking bus details
-    def check_bus_details():
-        print()
+    def check_bus_details(self):
+        root = Tk()
+        h, w = root.winfo_screenheight(), root.winfo_screenwidth()
+        root.geometry('%dx%d+0+0' % (w, h))
+        bus = PhotoImage(file='../assets/bus.png')
+        fr1 = Frame(root)
+        fr1.grid(row=0, column=0, columnspan=10)
+        fr2 = Frame(root)
+        fr2.grid(row=1, column=0, columnspan=10)
+        fr3 = Frame(root)
+        fr3.grid(row=2, column=0, columnspan=10)
+        fr4=Frame(root)
+        fr4.grid(row=3, column=0, columnspan=10)
+        Label(fr1, image=bus).grid(row=0, column=0, padx=root.winfo_screenwidth()// 2.4)
+        Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
+        Label(fr2, text="Check Your Booking", font='arial 16 bold', fg="green4", bg="green2").grid(row=2, column=2,pady=20)
+        # Input boxes
+        to_label = Label(fr3, text="Enter Your Number :", font='arial 12')
+        to_label.grid(row=1, column=1, padx=10,sticky='e')
+        to_entry = Entry(fr3)
+        to_entry.grid(row=1, column=2, padx=10)
+        
+        def check_booking():
+            pass            
+        check_button = Button(fr3, text="Check",font='arial 12 bold', bg="gray", fg="black", command=check_booking)
+        check_button.grid(row=1, column=3, padx=10)
+        def go_back():
+            root.destroy()
+            self.main_window()
+        back_button = Button(fr3, text="Back", command=go_back)
+        back_button.grid(row=1, column=4)
+        root.mainloop()
 
 
-
+#For admin to adding to database  
     def admin_only(self):
         root = Tk()
         h,w=root.winfo_screenheight(),root.winfo_screenwidth()
@@ -117,6 +143,9 @@ class demo():
         def newrun():
             root.destroy()
             self.bus_running_detail()
+        def newstation():
+            root.destroy()
+            self.add_station()
         New_operator = Button(root,text="New Operator",font=("Arial", 15,),bg= "pale green", fg= "gray5",command=newop)
         New_operator.grid(row=3,column=8,pady=20)
         New_Bus = Button(root,text="New Bus",font=("Arial", 15,),bg= "coral", fg= "gray5",command=newbus)
@@ -125,16 +154,17 @@ class demo():
         New_Route.grid(row=3,column=10,pady=20)
         New_Run = Button(root,text="New Run",font=("Arial", 15,),bg= "RosyBrown3", fg= "gray5",command=newrun)
         New_Run.grid(row=3,column=11,pady=20)
+        New_Station = Button(root,text="New Station",font=("Arial", 15,),bg= "yellow", fg= "gray5",command=newstation)
+        New_Station.grid(row=3,column=12,pady=20)
         def go_home():
             root.destroy()
             self.main_window()
         home_button = Button(root,text="Back",command=go_home)
         home_button.grid(row=4,column=10,pady=20,sticky='W')
-        root.mainloop()
-        
+        root.mainloop()        
     
 
-    
+#Options for admin  
     def add_bus_details(self):
         root = Tk()
         w, h = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -256,8 +286,7 @@ class demo():
         back_button = Button(root,text="Back", command=go_back)
         back_button.grid(row=5,column=10,pady=20,sticky='W')
 
-        root.mainloop()
-        
+        root.mainloop()        
         
         
         
@@ -371,7 +400,6 @@ class demo():
 
 
 
-
     def add_bus_route(self):
         root = Tk()
         w, h = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -415,8 +443,8 @@ class demo():
             print(f)
 
         Routeid = Label(root, text='Route ID', font='Arial 14')
-        station_name = Label(root, text='Station Name', font='Arial 14')
-        Station_id = Label(root, text='Station ID', font='Arial 14')
+        station_name = Label(root, text='Origin Station', font='Arial 14')
+        Station_id = Label(root, text='Destination Station', font='Arial 14')
 
         routef = Entry(root)
         snf = Entry(root)
@@ -437,21 +465,21 @@ class demo():
         snf.grid(row=5, column=6)
         Station_id.grid(row=5, column=7)
         staion_id_f.grid(row=5, column=8)
-        addb.grid(row=5, column=11)
-        eb.grid(row=5, column=12)
+        addb.grid(row=5, column=9)
+        eb.grid(row=5, column=10)
 
         def go_home():
             root.destroy()
             self.main_window()
         home=PhotoImage(file="../assets/home.png")
         home_button = Button(root,image=home, command=go_home)
-        home_button.grid(row=5,column=9,pady=20,sticky='W')
+        home_button.grid(row=5,column=12,pady=20,sticky='W')
 
         def go_back():
             root.destroy()
             self.admin_only()
         back_button = Button(root,text="Back", command=go_back)
-        back_button.grid(row=5,column=10,pady=20,sticky='W')
+        back_button.grid(row=5,column=11,pady=20,sticky='W')
 
         root.mainloop()
 
@@ -531,18 +559,35 @@ class demo():
             self.main_window()
         home=PhotoImage(file="../assets/home.png")
         home_button = Button(root,image=home, command=go_home)
-        home_button.grid(row=5,column=9,pady=20,sticky='W')
+        home_button.grid(row=5,column=11,pady=20,sticky='W')
 
         def go_back():
             root.destroy()
             self.admin_only()
         back_button = Button(root,text="Back", command=go_back)
-        back_button.grid(row=5,column=10,pady=20,sticky='W')
+        back_button.grid(row=5,column=12,pady=20,sticky='W')
 
 
         root.mainloop()
-    
 
+
+    
+    def add_station(self):
+        root = Tk()
+        h, w = root.winfo_screenheight(), root.winfo_screenwidth()
+        root.geometry('%dx%d+0+0' % (w, h))
+        bus = PhotoImage(file='../assets/bus.png')
+        fr1 = Frame(root)
+        fr1.grid(row=0, column=0, columnspan=10)
+        fr2 = Frame(root)
+        fr2.grid(row=1, column=0, columnspan=10)
+        Label(fr1, image=bus).grid(row=0, column=0, padx=w//2.4)
+        Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
+        Label(fr2, text='Add New Station', bg='gray20', fg='green3', font='Arial 22 bold').grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
+        fr3=Frame(root)
+        fr3.grid(row=2, column=0, columnspan=10)
+        
+        
 
 
 
