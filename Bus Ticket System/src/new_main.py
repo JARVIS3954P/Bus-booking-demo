@@ -2,8 +2,6 @@ from tkinter import *
 
 class demo():
 
-
-
 #for main window
     def main_window(self):
         root = Tk()
@@ -51,32 +49,76 @@ class demo():
         fr3.grid(row=2, column=0, columnspan=10)
         fr4=Frame(root)
         fr4.grid(row=3, column=0, columnspan=10)
+        fr5=Frame(root)
+        fr5.grid(row=4,column=0,columnspan=10)
         Label(fr1, image=bus).grid(row=0, column=0, padx=root.winfo_screenwidth()// 2.4)
         Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
         Label(fr3, text="Enter Journey Details", font='arial 16 bold', fg="green4", bg="green2").grid(row=0, column=2)
+       
+        to = StringVar()
+        frm = StringVar()
+        date = StringVar()
         # Input boxes
         to_label = Label(fr3, text="To")
         to_label.grid(row=1, column=1, sticky='e')
-        to_entry = Entry(fr3)
+        to_entry = Entry(fr3,textvariable=to)
         to_entry.grid(row=1, column=2)
         from_label = Label(fr3, text="From")
         from_label.grid(row=2, column=1, sticky='e')
-        from_entry = Entry(fr3)
+        from_entry = Entry(fr3,textvariable=frm)
         from_entry.grid(row=2, column=2)
         journey_date_label = Label(fr3, text="Journey Date")
         journey_date_label.grid(row=3, column=1, sticky='e')
-        journey_date_entry = Entry(fr3)
+        journey_date_entry = Entry(fr3,textvariable=date)
         journey_date_entry.grid(row=3, column=2)
         placeholder_label = Label(fr3, text="dd-mm-yyyy", fg="red")
         placeholder_label.grid(row=4, column=2)
+
+        
         def show_bus():
+            
+            tpl = ((1,"Kamla","AC 2x2",24,30,1000),(2,"Hans","Non-AC 1x1",29,30,1400))
+            #check_journey_details_with_seats(to.get(),frm.get(),date.get())
             Label(fr4, text="Select Bus",font='arial 16 bold', fg='green2').grid(row=0,column=0,padx=10)
             Label(fr4, text="Operator",font='arial 16 bold', fg='green2').grid(row=0,column=1,padx=10)
             Label(fr4, text="Bus Type",font='arial 16 bold', fg='green2').grid(row=0,column=2,padx=10)
             Label(fr4, text="Seat Available",font='arial 16 bold', fg='green2').grid(row=0,column=3,padx=10)
-            Label(fr4, text="Fare",font='arial 16 bold', fg='green2').grid(row=0,column=4,padx=10)            
+            Label(fr4, text="Fare",font='arial 16 bold', fg='green2').grid(row=0,column=4,padx=25)
+            global selected_bus_id
+            selected_bus_id = None
+            def button_click(id):
+                global selected_bus_id
+                selected_bus_id = id
+            def show_bus():
+                for row, (bus_id, operator,bus_type,a,t,fare) in enumerate(tpl):
+                    Button(fr4, text = "Bus_"+str(bus_id), font = 'arial 12 bold', fg='black', command = lambda id=bus_id: button_click(id)).grid(row=row+1,column=0,padx=10)
+                    Label(fr4, text=operator,font='arial 12 bold', fg='black').grid(row=row+1,column=1,padx=10)
+                    Label(fr4, text=operator,font='arial 12 bold', fg='black').grid(row=row+1,column=2,padx=10)
+                    Label(fr4, text=str(a)+"/"+str(t),font='arial 12 bold', fg='black').grid(row=row+1,column=3,padx=10)
+                    Label(fr4, text=str(fare),font='arial 12 bold', fg='black').grid(row=row+1,column=4,padx=25)
+            show_bus()
+            def cred():
+                id = selected_bus_id
+                Label(fr5,text="FILL PASSENGER DETAILS TO BOOK THIS TICKET").grid(row=0,column=0)
+                Label(fr5,text="Name").grid(row=1,column=0)
+                Entry(fr5).grid(row=1,column=1)
+                Label(fr5,text="Gender").grid(row=1,column=2)
+                Entry(fr5).grid(row=1,column=3)
+                Label(fr5,text="No of sets").grid(row=1,column=4)
+                Entry(fr5).grid(row=1,column=5)
+                Label(fr5,text="mob no").grid(row=1,column=6)
+                Entry(fr5).grid(row=1,column=7)
+                Label(fr5,text="age ").grid(row=1,column=8)
+                Entry(fr5).grid(row=1,column=9)
+                Button(fr5,text ="Book Seat").grid(row=1,column=10)
+            proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)
+
+    
+                
+                        
         show_bus_button = Button(fr3, text="Show Bus",font='arial 12 bold', bg="green2", fg="green4", command=show_bus)
         show_bus_button.grid(row=5, column=2, pady=10)
+        
         def go_back():
             root.destroy()
             self.main_window()
@@ -146,15 +188,15 @@ class demo():
             root.destroy()
             self.add_station()
         New_operator = Button(root,text="New Operator",font=("Arial", 15,),bg= "pale green", fg= "gray5",command=newop)
-        New_operator.grid(row=3,column=8,pady=20)
+        New_operator.grid(row=3,column=10,pady=20)
         New_Bus = Button(root,text="New Bus",font=("Arial", 15,),bg= "coral", fg= "gray5",command=newbus)
-        New_Bus.grid(row=3,column=9,pady=20)
+        New_Bus.grid(row=3,column=11,pady=20)
         New_Route = Button(root,text="New Route",font=("Arial", 15,),bg= "steel blue", fg= "gray5",command=newroute)
-        New_Route.grid(row=3,column=10,pady=20)
+        New_Route.grid(row=3,column=9,pady=20)
         New_Run = Button(root,text="New Run",font=("Arial", 15,),bg= "RosyBrown3", fg= "gray5",command=newrun)
-        New_Run.grid(row=3,column=11,pady=20)
+        New_Run.grid(row=3,column=12,pady=20)
         New_Station = Button(root,text="New Station",font=("Arial", 15,),bg= "yellow", fg= "gray5",command=newstation)
-        New_Station.grid(row=3,column=12,pady=20)
+        New_Station.grid(row=3,column=8,pady=20)
         def go_home():
             root.destroy()
             self.main_window()
@@ -207,7 +249,7 @@ class demo():
         busid = Label(root, text='Bus ID', font='Arial 14')
         bustype = Label(root, text='Bus type', font='Arial 14')
         CapacitY = Label(root, text='Capacity', font='Arial 14')
-        farE = Label(root, text='Fare Rs', font='Arial 14')
+        farE = Label(root, text='Fare ₹', font='Arial 14')
         opid = Label(root, text='Operator ID', font='Arial 14')
         Routeid = Label(root, text='Route ID', font='Arial 14')
 
@@ -511,11 +553,9 @@ class demo():
 
         Busid = Label(root, text='Bus ID', font='Arial 14')
         date = Label(root, text='Running Date', font='Arial 14')
-        avail = Label(root, text='Seat Available', font='Arial 14')
 
         bidf = Entry(root)
         datef = Entry(root)
-        availf = Entry(root)
 
 
         def addnew():
@@ -523,11 +563,11 @@ class demo():
             date = cur.fetchall()
             date = datecorrect()
             cur.execute("""insert into runs(runs_busID,runs_date,seat_available)values({},'{}',{})""".format(bidf.get(), date,
-                                                                                                availf.get()))
+                                                                                                ))
             con.commit()
 
 
-            op1 = Label(root, text='{} {} {} '.format(bidf.get(), datef.get(), availf.get()),
+            op1 = Label(root, text='{} {} {} '.format(bidf.get(), datef.get()),
                         font='Arial 12')
             op1.grid(row=6, columnspan=13)
             showinfo('Operator Entry Updated', 'Bus Running Record updated successfully')
@@ -539,7 +579,6 @@ class demo():
             print(f)
 
         addb = Button(root, text='Add Run', bg='SpringGreen2', font='Arial 14', command=addnew)
-        eb = Button(root, text='Delete Run', bg='SpringGreen2',fg='Red', font='Arial 14')
 
         #check_db = Button(root, text='Check', bg='SpringGreen2', font='Arial 14', command=checking)
         #check_db.grid(row=10, column=11)
@@ -548,11 +587,8 @@ class demo():
         bidf.grid(row=5, column=4)
         date.grid(row=5, column=5)
         datef.grid(row=5, column=6)
-        avail.grid(row=5, column=7)
-        availf.grid(row=5, column=8)
         addb.grid(row=5, column=9)
-        eb.grid(row=5, column=10)
-
+        
         def go_home():
             root.destroy()
             self.main_window()
