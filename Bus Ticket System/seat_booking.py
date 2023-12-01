@@ -58,7 +58,7 @@ show_bus_button.grid(row=5, column=2, pady=10)
 def go_home():
     root.destroy()
     import main
-home_image = PhotoImage(file=r"C:\Users\ASUS\Desktop\CODES\Python\Bus Ticket System\home.png")
+home_image = PhotoImage(file=r"C:\Users\ASUS\Desktop\CODES\Python\Bus-booking-demo\Bus Ticket System\home.png")
 home_button = Button(fr3, image=home_image, command=go_home)
 home_button.grid(row=5, column=3)
 
