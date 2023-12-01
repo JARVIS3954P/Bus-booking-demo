@@ -40,8 +40,6 @@ class demo():
 
 
 
-
-
 #for seat booking
     def seat_booking(self):
         root = Tk()
@@ -92,13 +90,9 @@ class demo():
 
 
 
-
-
 #for checking bus details
     def check_bus_details():
         print()
-
-
 
 
 
@@ -139,7 +133,7 @@ class demo():
         root.mainloop()
         
     
-    
+
     
     def add_bus_details(self):
         root = Tk()
@@ -249,20 +243,23 @@ class demo():
         addb.grid(row=5, column=7)
         eb.grid(row=5, column=8)
 
-        def go_Intro():
-            root.destroy()
-            import Intro
-        home=PhotoImage(file="../assets/home.png")
-        home_button = Button(root,image=home, command=go_Intro)
-        home_button.grid(row=5,column=9,pady=20,sticky='W')
-
         def go_home():
             root.destroy()
-            import Home_page
-        back_button = Button(root,text="Back", command=go_home)
+            self.main_window()
+        home=PhotoImage(file="../assets/home.png")
+        home_button = Button(root,image=home, command=go_home)
+        home_button.grid(row=5,column=9,pady=20,sticky='W')
+
+        def go_back():
+            root.destroy()
+            self.admin_only()
+        back_button = Button(root,text="Back", command=go_back)
         back_button.grid(row=5,column=10,pady=20,sticky='W')
 
         root.mainloop()
+        
+        
+        
         
     def add_bus_operator(self):
         root = Tk()
@@ -357,20 +354,23 @@ class demo():
         addb.grid(row=3, column=11)
         eb.grid(row=3, column=12)
 
-        def go_Intro():
-            root.destroy()
-            import Intro
-        home=PhotoImage(file="../assets/home.png")
-        home_button = Button(root,image=home, command=go_Intro)
-        home_button.grid(row=3,column=13,pady=20,sticky='W')
-
         def go_home():
             root.destroy()
-            import Home_page
-        home_button = Button(root,text="Back", command=go_home)
-        home_button.grid(row=3,column=14,pady=20,sticky='W')
+            self.main_window()
+        home=PhotoImage(file="../assets/home.png")
+        home_button = Button(root,image=home, command=go_home)
+        home_button.grid(row=5,column=9,pady=20,sticky='W')
+
+        def go_back():
+            root.destroy()
+            self.admin_only()
+        back_button = Button(root,text="Back", command=go_back)
+        back_button.grid(row=5,column=10,pady=20,sticky='W')
 
         root.mainloop()
+
+
+
 
     def add_bus_route(self):
         root = Tk()
@@ -440,20 +440,22 @@ class demo():
         addb.grid(row=5, column=11)
         eb.grid(row=5, column=12)
 
-        def go_Intro():
-            root.destroy()
-            import Intro
-        home=PhotoImage(file="../assets/home.png")
-        home_button = Button(root,image=home, command=go_Intro)
-        home_button.grid(row=5,column=14,pady=20,sticky='W')
-
         def go_home():
             root.destroy()
-            import Home_page
-        home_button = Button(root,text="Back", command=go_home)
-        home_button.grid(row=5,column=13,pady=20,sticky='W')
+            self.main_window()
+        home=PhotoImage(file="../assets/home.png")
+        home_button = Button(root,image=home, command=go_home)
+        home_button.grid(row=5,column=9,pady=20,sticky='W')
+
+        def go_back():
+            root.destroy()
+            self.admin_only()
+        back_button = Button(root,text="Back", command=go_back)
+        back_button.grid(row=5,column=10,pady=20,sticky='W')
 
         root.mainloop()
+
+
 
     def bus_running_detail(self):
         root = Tk()
@@ -524,18 +526,18 @@ class demo():
         addb.grid(row=5, column=9)
         eb.grid(row=5, column=10)
 
-        def go_Intro():
-            root.destroy()
-            import Intro
-        home=PhotoImage(file="../assets/home.png")
-        home_button = Button(root,image=home, command=go_Intro)
-        home_button.grid(row=5,column=11,pady=20,sticky='W')
-
         def go_home():
             root.destroy()
-            import Home_page
-        home_button = Button(root,text="Back", command=go_home)
-        home_button.grid(row=5,column=12,pady=20,sticky='W')
+            self.main_window()
+        home=PhotoImage(file="../assets/home.png")
+        home_button = Button(root,image=home, command=go_home)
+        home_button.grid(row=5,column=9,pady=20,sticky='W')
+
+        def go_back():
+            root.destroy()
+            self.admin_only()
+        back_button = Button(root,text="Back", command=go_back)
+        back_button.grid(row=5,column=10,pady=20,sticky='W')
 
 
         root.mainloop()
