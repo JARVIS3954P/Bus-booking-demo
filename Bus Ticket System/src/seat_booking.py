@@ -18,7 +18,7 @@ fr3.grid(row=2, column=0, columnspan=10)
 fr4=Frame(root)
 fr4.grid(row=3, column=0, columnspan=10)
 
-Label(fr1, image=bus).grid(row=0, column=0, padx=w // 2.4)
+Label(fr1, image=bus).grid(row=0, column=0, padx=// 2.4)
 
 Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
 
