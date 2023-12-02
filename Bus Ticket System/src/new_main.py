@@ -3,6 +3,8 @@ from sqlite import *
 import sqlite3
 from datetime import datetime
 from tkinter import messagebox
+import tkinter as tk
+from tkinter import ttk
 
 db_path = 'project.db'
 
@@ -51,7 +53,47 @@ class demo():
         Label(fr3, text="For Admin Only", fg="red", font='arial 10').grid(row=3, column=2, pady=5)
         root.mainloop()
 
+    def ticket_window(self,ph_no):
+            root=Tk()
+            h,w=root.winfo_screenheight(),root.winfo_screenwidth()
+            root.geometry('%dx%d+0+0'%(w,h))
+            bus=PhotoImage(file='.\\Bus_for_project.png')
+            fr1=Frame(root)
+            fr1.grid(row=0,column=0,columnspan=10)
+            fr2=Frame(root)
+            fr2.grid(row=1,column=0,columnspan=10)
+            Label(fr1,image=bus).grid(row=0,column=0,padx=w//2.5)
+            Label(fr2,text='Online Bus Booking System',fg='red',bg='light Blue',font='arial 30 bold').grid(row=1,column=0,pady=40,padx=1)
+            Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=0,padx=2.5)
+            showinfo('info','Seat Booked.......')
+            fr=Frame(root,relief='groove',bd=3)
+            fr.grid(row=4,column=0,columnspan=50,padx=(w/15,0))
+            Label(fr,text='Passengers :',font='Arial 10 bold').grid(row=3,column=1)
+            Label(fr,text='Gender :',font='Arial 10 bold').grid(row=3,column=4)
+            Label(fr,text='No of seats:',font='Arial 10 bold').grid(row=4,column=1)
+            Label(fr,text='Phone:',font='Arial 10 bold').grid(row=4,column=4)
+            Label(fr,text='Age :',font='Arial 10 bold').grid(row=5,column=1)
+            Label(fr,text='Fare Rs :',font='Arial 10 bold').grid(row=5,column=4)
+            Label(fr,text='Booking Ref :',font='Arial 10 bold').grid(row=6,column=1)
+            Label(fr,text='Bus Detail :',font='Arial 10 bold').grid(row=6,column=4)
+            Label(fr,text='Travel on :',font='Arial 10 bold').grid(row=7,column=1)
+            Label(fr,text='Booked On :',font='Arial 10 bold').grid(row=7,column=4)
+            Label(fr,text='No of Seats:',font='Arial 10 bold').grid(row=8,column=1)
+            Label(fr,text='Boarding point :',font='Arial 10 bold').grid(row=8,column=4)
+            Label(fr,text='* Total amount of Rs 1000.00/- to be paid at the time of boarding',font='Arial 8').grid(row=9,columnspan=100,pady=10)
 
+            def go_home():
+                root.destroy()
+                self.main_window()
+            home=PhotoImage(file="../assets/home.png")
+            home_button = Button(root,image=home, command=go_home)
+            home_button.grid(row=5,column=9,pady=20,sticky='W')
+            def go_back():
+                root.destroy()
+                self.admin_only()
+            back_button = Button(root,text="Back", command=go_back)
+            back_button.grid(row=5,column=10,pady=20,sticky='W')
+            root.mainloop()    
 
     def seat_booking(self):
         root = Tk()
@@ -94,6 +136,10 @@ class demo():
         placeholder_label = Label(fr3, text="yyyy-mm-dd", fg="red")
         placeholder_label.grid(row=4, column=2)
         
+
+
+
+
         def show_bus(tpl):
             
             #tpl = check_journey_details_with_seats(to.get(),frm.get(),date.get())
@@ -132,12 +178,14 @@ class demo():
                 mobile_number = StringVar() 
                 age = IntVar()
 
-
+                root=tk.Tk()
                 Label(fr5,text="FILL PASSENGER DETAILS TO BOOK THIS TICKET", font='arial 16 bold', fg='red',bg='light blue').grid(row=0,column=2,pady=20)
                 Label(fr6,text="Name",font = 'arial 12 bold').grid(row=1,column=0,padx=10)
                 Entry(fr6,textvariable= passenger_name).grid(row=1,column=1,padx=15)
                 Label(fr6,text="Gender",font = 'arial 12 bold').grid(row=1,column=2,padx=10)
-                Entry(fr6,textvariable= sex).grid(row=1,column=3,padx=15)
+                gender_options=["Male","Female","Others"]
+                selected_option = tk.StringVar()
+                dropdown = ttk.OptionMenu(fr6, selected_option, *gender_options).grid(row=1,column=3,padx=15)
                 Label(fr6,text="No of sets",font = 'arial 12 bold').grid(row=1,column=4,padx=10)
                 Entry(fr6,textvariable=seats).grid(row=1,column=5,padx=15)
                 Label(fr6,text="mob no",font = 'arial 12 bold').grid(row=1,column=6,padx=10)
@@ -151,11 +199,19 @@ class demo():
                     else:
                         add_new_booking_with_seat_update(db_path,tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6])
 
-                
-                Button(fr6,text ="Book Seat",command = insert).grid(row=1,column=10)
+                def confirm():
+                    def confirmed():
+                        root.destroy()
+                        self.ticket_window(mobile_number)
+
+                    result = messagebox.askquestion("Confirm?", "You'll be paying ₹1000")
+                    if result == 'yes':
+                        confirmed()
+                Button(fr6,text ="Book Seat",command = confirm).grid(row=1,column=10)
             proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)
 
         
+
 
         def insert():
             def is_valid_date_format(date_str):
@@ -209,7 +265,7 @@ class demo():
         to_entry.grid(row=1, column=2, padx=10)
         
         def check_booking():
-            pass            
+            self.ticket_window(to_entry)#here to_entry is mobile number            
         check_button = Button(fr3, text="Check",font='arial 12 bold', bg="gray", fg="black", command=check_booking)
         check_button.grid(row=1, column=3, padx=10)
         def go_back():
