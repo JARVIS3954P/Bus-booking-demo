@@ -146,11 +146,11 @@ def update_operator(db_path, operator_id, name, address, phone_number, email):
     connection.commit()
     connection.close()
     return 1         
-def add_new_bus(db_path,bus_id, bus_type, capacity, fare, operator_name, route_id):
+def add_new_bus(db_path,bus_id, bus_type, capacity, fare, operator_id, route_id):
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
     # Check if the operator exists in the OPERATOR table
-    cursor.execute('SELECT operator_id FROM OPERATOR WHERE name = ?', (operator_name,))
+    cursor.execute('SELECT operator_id FROM OPERATOR WHERE operator_id = ?', (operator_id,))
     operator_result = cursor.fetchone()
     if operator_result:
         operator_id = operator_result[0]
