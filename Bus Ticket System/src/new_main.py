@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 
 class demo():
 
@@ -50,7 +51,9 @@ class demo():
         fr4=Frame(root)
         fr4.grid(row=3, column=0, columnspan=10)
         fr5=Frame(root)
-        fr5.grid(row=4,column=0,columnspan=10)
+        fr5.grid(row=5,column=0,columnspan=10)
+        fr6=Frame(root)
+        fr6.grid(row=4,column=0,columnspan=10,pady=10)
         Label(fr1, image=bus).grid(row=0, column=0, padx=root.winfo_screenwidth()// 2.4)
         Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
         Label(fr3, text="Enter Journey Details", font='arial 16 bold', fg="green4", bg="green2").grid(row=0, column=2)
@@ -99,18 +102,25 @@ class demo():
             show_bus()
             def cred():
                 id = selected_bus_id
-                Label(fr5,text="FILL PASSENGER DETAILS TO BOOK THIS TICKET").grid(row=0,column=0)
-                Label(fr5,text="Name").grid(row=1,column=0)
-                Entry(fr5).grid(row=1,column=1)
-                Label(fr5,text="Gender").grid(row=1,column=2)
-                Entry(fr5).grid(row=1,column=3)
-                Label(fr5,text="No of sets").grid(row=1,column=4)
-                Entry(fr5).grid(row=1,column=5)
-                Label(fr5,text="mob no").grid(row=1,column=6)
-                Entry(fr5).grid(row=1,column=7)
-                Label(fr5,text="age ").grid(row=1,column=8)
-                Entry(fr5).grid(row=1,column=9)
-                Button(fr5,text ="Book Seat").grid(row=1,column=10)
+                Label(fr6, text="FILL PASSENGER DETAILS TO BOOK THIS TICKET", font="arial 24 bold", bg='light blue', fg='red').grid(row=11, column=0)
+                Label(fr5, text="Name").grid(row=1, column=0, padx=10)
+                Entry(fr5).grid(row=1, column=1, padx=10)
+                
+                Label(fr5, text="Gender").grid(row=1, column=2, padx=10)
+                gender_options = ['Male', 'Female', 'Others']
+                gender_combo = ttk.Combobox(fr5, values=gender_options)
+                gender_combo.grid(row=1, column=3, padx=10)
+                
+                Label(fr5, text="No of seats").grid(row=1, column=4, padx=10)
+                Entry(fr5).grid(row=1, column=5, padx=10)
+                
+                Label(fr5, text="mob no").grid(row=1, column=6, padx=10)
+                Entry(fr5).grid(row=1, column=7, padx=10)
+                
+                Label(fr5, text="age ").grid(row=1, column=8, padx=10)
+                Entry(fr5).grid(row=1, column=9, padx=10)
+                
+                Button(fr5, text="Book Seat").grid(row=1, column=10, padx=10)
             proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)
 
     
