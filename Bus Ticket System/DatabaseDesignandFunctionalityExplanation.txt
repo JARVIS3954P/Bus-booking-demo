@@ -1,0 +1,199 @@
+Database Design and Functionality Explanation
+Database Tables:
+1. STATION
+
+    Stores information about bus stations.
+    Columns:
+        id (Primary Key): Unique identifier for each station.
+        name: Name of the station.
+
+2. ROUTES
+
+    Defines routes between stations.
+    Columns:
+        route_id (Primary Key): Unique identifier for each route.
+        origin: Foreign key referencing STATION(id) indicating the starting station.
+        destination: Foreign key referencing STATION(id) indicating the destination station.
+
+3. OPERATOR
+
+    Contains details about bus operators.
+    Columns:
+        operator_id (Primary Key): Unique identifier for each operator.
+        name: Name of the operator.
+        address: Address of the operator.
+        ph_no: Phone number of the operator.
+        email: Email address of the operator.
+
+4. BUSES
+
+    Stores information about buses.
+    Columns:
+        id (Primary Key): Unique identifier for each bus.
+        type: Type of the bus.
+        capacity: Maximum seating capacity of the bus.
+        fare: Fare for the bus.
+        op_id: Foreign key referencing OPERATOR(operator_id) indicating the operator of the bus.
+        r_id: Foreign key referencing ROUTES(route_id) indicating the route of the bus.
+
+5. JOURNEY
+
+    Represents individual journeys of buses.
+    Columns:
+        journey_id (Primary Key): Unique identifier for each journey.
+        journey_date: Date of the journey.
+        bus_id: Foreign key referencing BUSES(id) indicating the bus for the journey.
+        available_seats: Number of available seats on the bus for this journey.
+
+6. BOOKING
+
+    Stores details about passenger bookings.
+    Columns:
+        journey: Foreign key referencing JOURNEY(journey_id) indicating the journey for the booking.
+        name: Name of the passenger.
+        sex: Gender of the passenger (M/F).
+        seats: Number of seats booked.
+        mob_no: Mobile number of the passenger.
+        age: Age of the passenger.
+        total_fare: Total fare for the booking.
+
+Functions Explanation:
+1. check_journey_details_with_seats
+
+    Fetches details about buses available for a specific route on a given date with available seats.
+    Joins multiple tables to retrieve information about the bus, operator, and route.
+    Parameters:
+        db_path: Path to the SQLite database.
+        origin: Starting station name.
+        destination: Destination station name.
+        date: Date of the journey.
+    Returns a list of tuples containing bus details.
+
+2. add_new_booking_with_seat_update
+
+    Adds a new booking and updates available seats for the specified journey.
+    Checks if there are enough available seats for the booking.
+    Parameters:
+        db_path: Path to the SQLite database.
+        date: Date of the journey.
+        bus_id: Bus identifier.
+        passenger_name: Name of the passenger.
+        sex: Gender of the passenger.
+        seats: Number of seats to be booked.
+        mobile_number: Mobile number of the passenger.
+        age: Age of the passenger.
+        total_fare: Total fare for the booking.
+    Returns:
+        1: Not enough available seats.
+        2: Booking successful.
+
+3. check_booked_seat
+
+    Retrieves details of booked seats for a given mobile number.
+    Joins multiple tables to fetch information about the booked journey, origin, destination, fare, etc.
+    Parameter:
+        number: Mobile number of the passenger.
+
+4. insert_station_data
+
+    Inserts new station data into the STATION table.
+    Parameters:
+        db_path: Path to the SQLite database.
+        station_id: Identifier for the station.
+        station_name: Name of the station.
+    Returns:
+        1: Success.
+
+5. add_new_route
+
+    Adds a new route to the ROUTES table.
+    Checks if the origin and destination stations exist in the STATION table.
+    Parameters:
+        db_path: Path to the SQLite database.
+        route_id: Identifier for the route.
+        origin: Starting station name.
+        destination: Destination station name.
+    Returns:
+        1: Success.
+        0: Origin or destination not found.
+
+6. delete_route_by_id
+
+    Deletes a route from the ROUTES table based on the route_id.
+    Parameters:
+        db_path: Path to the SQLite database.
+        route_id: Identifier for the route.
+    Returns:
+        1: Success.
+        0: Route with the given route_id not found.
+
+7. add_new_operator
+
+    Inserts new operator details into the OPERATOR table.
+    Parameters:
+        db_path: Path to the SQLite database.
+        operator_id: Identifier for the operator.
+        name: Name of the operator.
+        address: Address of the operator.
+        phone_number: Phone number of the operator.
+        email: Email address of the operator.
+    Returns:
+        1: Success.
+
+8. update_operator
+
+    Updates existing operator details in the OPERATOR table.
+    Parameters:
+        db_path: Path to the SQLite database.
+        operator_id: Identifier for the operator.
+        name: Updated name of the operator.
+        address: Updated address of the operator.
+        phone_number: Updated phone number of the operator.
+        email: Updated email address of the operator.
+    Returns:
+        1: Success.
+
+9. add_new_bus
+
+    Adds a new bus to the BUSES table.
+    Checks if the specified operator exists.
+    Parameters:
+        db_path: Path to the SQLite database.
+        bus_id: Identifier for the bus.
+        bus_type: Type of the bus.
+        capacity: Maximum seating capacity of the bus.
+        fare: Fare for the bus.
+        o_id: Operator identifier.
+        route_id: Route identifier.
+    Returns:
+        1: Success.
+        0: Operator not found.
+
+10. update_bus
+
+    Updates existing bus details in the BUSES table.
+    Checks if the specified operator and bus exist.
+    Parameters:
+        db_path: Path to the SQLite database.
+        bus_id: Identifier for the bus.
+        bus_type: Updated type of the bus.
+        capacity: Updated maximum seating capacity of the bus.
+        fare: Updated fare for the bus.
+        o_id: Updated operator identifier.
+        route_id: Updated route identifier.
+    Returns:
+        1: Success.
+        0: Bus not found or operator not found.
+
+11. add_new_journey
+
+    Adds a new journey to the JOURNEY table.
+    Checks if the bus is already on a journey and retrieves bus capacity.
+    Parameters:
+        db_path: Path to the SQLite database.
+        journey_date: Date of the journey.
+        bus_id: Bus identifier.
+    Returns:
+        1: Success.
+        0: Bus not found.
+        -1: Bus is already on a journey.

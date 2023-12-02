@@ -68,17 +68,17 @@ class demo():
             Label(fr1, image=bus).grid(row=0, column=0, padx=w//2.4)
             Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
             Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=2,padx=10)
-
+            tpl = fetch_passenger_details(db_path,ph_no)
             fr3=Frame(root,relief='groove',bd=3)
             fr3.grid(row=2,column=0,columnspan=50,padx=(w/15,0))
             fr4=Frame(root,relief='groove',bd=3)
             fr4.grid(row=3,column=0,columnspan=50,padx=(w/15,0))
-            Label(fr3,text='Passenger Name :',font='Arial 10 bold').grid(row=0,column=0, padx=20)
-            Label(fr3,text='Gender :',font='Arial 10 bold').grid(row=1,column=0, padx=20)
-            Label(fr3,text='Age :',font='Arial 10 bold').grid(row=2,column=0, padx=20)
-            Label(fr3,text='Phone:',font='Arial 10 bold').grid(row=3,column=0, padx=20)
-            Label(fr3,text='Seats Booked :',font='Arial 10 bold').grid(row=4,column=0, padx=20)
-            Label(fr3,text='Fare ₹ :',font='Arial 10 bold').grid(row=5,column=0, padx=20)
+            Label(fr3,text='Passenger Name :'+tpl[0][0],font='Arial 10 bold').grid(row=0,column=0, padx=20)
+            Label(fr3,text='Gender :'+tpl[0][1],font='Arial 10 bold').grid(row=1,column=0, padx=20)
+            Label(fr3,text='Age :'+str(tpl[0][2]),font='Arial 10 bold').grid(row=2,column=0, padx=20)
+            Label(fr3,text='Phone:'+tpl[0][3],font='Arial 10 bold').grid(row=3,column=0, padx=20)
+            Label(fr3,text='Seats Booked :'+str(tpl[0][4]),font='Arial 10 bold').grid(row=4,column=0, padx=20)
+            Label(fr3,text='Fare ₹ :'+str(tpl[0][5]),font='Arial 10 bold').grid(row=5,column=0, padx=20)
             Label(fr3,text='Bus Detail :',font='Arial 10 bold').grid(row=0,column=1)
             Label(fr3,text='Operator Contact :',font='Arial 10 bold').grid(row=1,column=1)
             Label(fr3,text='Booking Ref :',font='Arial 10 bold').grid(row=2,column=1)
@@ -186,15 +186,17 @@ class demo():
                     gender_options=['M','F']
                     dropdown = OptionMenu(fr6, sex, *gender_options)
                     dropdown.grid(row=1,column=3,padx=15)
-                    Label(fr6,text="No of sets",font = 'arial 12 bold').grid(row=1,column=4,padx=10)
+                    Label(fr6,text="No of seats",font = 'arial 12 bold').grid(row=1,column=4,padx=10)
                     Entry(fr6,textvariable=seats).grid(row=1,column=5,padx=15)
-                    Label(fr6,text="mob no",font = 'arial 12 bold').grid(row=1,column=6,padx=10)
+                    Label(fr6,text="*limit 8 seats/user",font = 'arial 10', fg='red').grid(row=2,column=4,padx=10)
+                    Label(fr6,text="Mobile Number",font = 'arial 12 bold').grid(row=1,column=6,padx=10)
                     Entry(fr6,textvariable= mobile_number).grid(row=1,column=7,padx=15)
                     Label(fr6,text="age ",font = 'arial 12 bold').grid(row=1,column=8,padx=10)
                     Entry(fr6,textvariable = age).grid(row=1,column=9,padx=15)
+                    Label(fr6,text="*(>18 & <90)",font = 'arial 10', fg='red').grid(row=2,column=8,padx=10)
 
                     def insert():
-                        if(age.get()>90 or seats.get() > 8):
+                        if((age.get()>90 and age.get() < 18)or seats.get() > 8):
                             messagebox.showinfo("Error", "Please insert correct fields!")
                         else:  
                             result = messagebox.askquestion("Confirm?", "You'll be paying ₹1000")

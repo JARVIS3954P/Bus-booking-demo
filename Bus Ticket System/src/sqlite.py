@@ -52,24 +52,22 @@ def add_new_booking_with_seat_update(db_path, date,bus_id, passenger_name, sex, 
     connection.close()
     return 2 
 
-def check_booked_seat(number):
-    cursor.execute('''SELECT
-        B.name AS passenger_name,
-        R.origin AS journey_origin,
-        R.destination AS journey_destination,
-        J.journey_date AS journey_date,
-        J.total_fare AS fare,
-        B.seats AS seats,
-        B.sex AS gender
-        FROM
-            BOOKING B
-        JOIN
-            JOURNEY J ON B.journey = J.journey_id
-        JOIN
-            ROUTES R ON J.bus_id = R.route_id
-        WHERE
-            B.mob_no = ?;
-        ''',(number))
+def fetch_passenger_details(db_path, phone_number):
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    cursor.execute('''
+		SELECT B.name AS passenger_name, B.sex, B.age, B.mob_no AS passenger_phone,
+        B.seats AS seats_booked, B.total_fare
+        FROM BOOKING B
+        WHERE B.mob_no = ?;
+    ''', (phone_number,))
+
+    passenger_details = cursor.fetchall()
+
+    connection.close()
+
+    return passenger_details
 
 def insert_station_data(db_path, station_id, station_name):
     connection = sqlite3.connect(db_path)
