@@ -52,7 +52,7 @@ cursor.execute('''CREATE TABLE BOOKING(
 	name TEXT NOT NULL,
 	sex CHAR(1) NOT NULL CHECK(sex IN ('M', 'F')),
 	seats INT NOT NULL,
-	mob_no TEXT PRIMARY KEY CHECK(LENGTH(mob_no) = 10),
+	mob_no TEXT NOT NULL CHECK(LENGTH(mob_no) = 10),
 	age INT NOT NULL,
 	total_fare INT NOT NULL,
 	FOREIGN KEY (journey) REFERENCES JOURNEY(journey_id));

@@ -57,7 +57,7 @@ class demo():
             root=Tk()
             h,w=root.winfo_screenheight(),root.winfo_screenwidth()
             root.geometry('%dx%d+0+0'%(w,h))
-            bus=PhotoImage(file='.\\Bus_for_project.png')
+            bus=PhotoImage(file='../assets/bus.png')
             fr1=Frame(root)
             fr1.grid(row=0,column=0,columnspan=10)
             fr2=Frame(root)
@@ -65,7 +65,7 @@ class demo():
             Label(fr1,image=bus).grid(row=0,column=0,padx=w//2.5)
             Label(fr2,text='Online Bus Booking System',fg='red',bg='light Blue',font='arial 30 bold').grid(row=1,column=0,pady=40,padx=1)
             Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=0,padx=2.5)
-            showinfo('info','Seat Booked.......')
+            messagebox.showinfo('info','Seat Booked.......')
             fr=Frame(root,relief='groove',bd=3)
             fr.grid(row=4,column=0,columnspan=50,padx=(w/15,0))
             Label(fr,text='Passengers :',font='Arial 10 bold').grid(row=3,column=1)
@@ -139,7 +139,6 @@ class demo():
 
 
 
-
         def show_bus(tpl):
             
             #tpl = check_journey_details_with_seats(to.get(),frm.get(),date.get())
@@ -148,7 +147,6 @@ class demo():
             Label(fr4, text="Bus Type",font='arial 16 bold', fg='dark slate gray').grid(row=0,column=2,padx=10)
             Label(fr4, text="Seat Available",font='arial 16 bold', fg='dark slate gray',).grid(row=0,column=3,padx=10)
             Label(fr4, text="Fare",font='arial 16 bold', fg='dark slate gray').grid(row=0,column=4,padx=25)
-            global selected_bus_id
             global selected_bus_id
             global busfare
             selected_bus_id = None
@@ -171,43 +169,49 @@ class demo():
                 f = busfare
                 global selected_bus_id
                 bus_id = selected_bus_id
-        
-                passenger_name = StringVar()
-                sex = StringVar()
-                seats = IntVar()
-                mobile_number = StringVar() 
-                age = IntVar()
+                if(selected_bus_id != None or busfare != None):
 
-                root=tk.Tk()
-                Label(fr5,text="FILL PASSENGER DETAILS TO BOOK THIS TICKET", font='arial 16 bold', fg='red',bg='light blue').grid(row=0,column=2,pady=20)
-                Label(fr6,text="Name",font = 'arial 12 bold').grid(row=1,column=0,padx=10)
-                Entry(fr6,textvariable= passenger_name).grid(row=1,column=1,padx=15)
-                Label(fr6,text="Gender",font = 'arial 12 bold').grid(row=1,column=2,padx=10)
-                gender_options=["Male","Female","Others"]
-                selected_option = tk.StringVar()
-                dropdown = ttk.OptionMenu(fr6, selected_option, *gender_options).grid(row=1,column=3,padx=15)
-                Label(fr6,text="No of sets",font = 'arial 12 bold').grid(row=1,column=4,padx=10)
-                Entry(fr6,textvariable=seats).grid(row=1,column=5,padx=15)
-                Label(fr6,text="mob no",font = 'arial 12 bold').grid(row=1,column=6,padx=10)
-                Entry(fr6,textvariable= mobile_number).grid(row=1,column=7,padx=15)
-                Label(fr6,text="age ",font = 'arial 12 bold').grid(row=1,column=8,padx=10)
-                Entry(fr6,textvariable = age).grid(row=1,column=9,padx=15)
-                def insert():
-                    tmp = self.process_arguments(bus_id,passenger_name.get(),sex.get(),seats.get(),mobile_number.get(),age.get(),f*seats.get()) 
-                    if tmp == 0:
-                        print("Error msg")
-                    else:
-                        add_new_booking_with_seat_update(db_path,tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6])
+            
+                    passenger_name = StringVar()
+                    sex = StringVar()
+                    seats = IntVar()
+                    mobile_number = StringVar() 
+                    age = IntVar()
+                    Label(fr5,text="FILL PASSENGER DETAILS TO BOOK THIS TICKET", font='arial 16 bold', fg='red',bg='light blue').grid(row=0,column=2,pady=20)
+                    Label(fr6,text="Name",font = 'arial 12 bold').grid(row=1,column=0,padx=10)
+                    Entry(fr6,textvariable= passenger_name).grid(row=1,column=1,padx=15)
+                    Label(fr6,text="Gender",font = 'arial 12 bold').grid(row=1,column=2,padx=10)
+                    gender_options=['M','F']
+                    dropdown = OptionMenu(fr6, sex, *gender_options)
+                    dropdown.grid(row=1,column=3,padx=15)
+                    Label(fr6,text="No of sets",font = 'arial 12 bold').grid(row=1,column=4,padx=10)
+                    Entry(fr6,textvariable=seats).grid(row=1,column=5,padx=15)
+                    Label(fr6,text="mob no",font = 'arial 12 bold').grid(row=1,column=6,padx=10)
+                    Entry(fr6,textvariable= mobile_number).grid(row=1,column=7,padx=15)
+                    Label(fr6,text="age ",font = 'arial 12 bold').grid(row=1,column=8,padx=10)
+                    Entry(fr6,textvariable = age).grid(row=1,column=9,padx=15)
 
-                def confirm():
-                    def confirmed():
-                        root.destroy()
-                        self.ticket_window(mobile_number)
+                    def insert():
+                        if(age.get()>90 or seats.get() > 8):
+                            messagebox.showinfo("Error", "Please insert correct fields!")
+                        else:  
+                            result = messagebox.askquestion("Confirm?", "You'll be paying ₹1000")
+                            if(result == 'yes'):
+                                val = add_new_booking_with_seat_update(db_path,date.get(),bus_id,passenger_name.get(),sex.get(),seats.get(),mobile_number.get(),age.get(),f*seats.get())
+                                if val == 1:
+                                    messagebox.showinfo("Sorry", "Not Enough Seats Avalable")
+                                elif val == 2:
+                                    root.destroy()
+                                    self.ticket_window(mobile_number)
+                                else:
+                                    messagebox.showinfo("Error","Enter all the Details")
 
-                    result = messagebox.askquestion("Confirm?", "You'll be paying ₹1000")
-                    if result == 'yes':
-                        confirmed()
-                Button(fr6,text ="Book Seat",command = confirm).grid(row=1,column=10)
+                    Button(fr6,text ="Book Seat",command = insert).grid(row=1,column=10)
+                else:
+                    messagebox.showinfo("Error", "Please Select a Bus")
+            
+
+
             proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)
 
         
@@ -259,13 +263,15 @@ class demo():
         Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
         Label(fr2, text="Check Your Booking", font='arial 16 bold', fg="green4", bg="green2").grid(row=2, column=2,pady=20)
         # Input boxes
+        ph_no = StringVar()
         to_label = Label(fr3, text="Enter Your Number :", font='arial 12')
         to_label.grid(row=1, column=1, padx=10,sticky='e')
-        to_entry = Entry(fr3)
+        to_entry = Entry(fr3,textvariable = ph_no)
         to_entry.grid(row=1, column=2, padx=10)
         
         def check_booking():
-            self.ticket_window(to_entry)#here to_entry is mobile number            
+            root.destroy()
+            self.ticket_window(ph_no.get())#here to_entry is mobile number            
         check_button = Button(fr3, text="Check",font='arial 12 bold', bg="gray", fg="black", command=check_booking)
         check_button.grid(row=1, column=3, padx=10)
         def go_back():
@@ -643,7 +649,29 @@ class demo():
     
 
         
-
+root = Tk()
+h, w = root.winfo_screenheight(), root.winfo_screenwidth()
+root.geometry('%dx%d+0+0' % (w, h))
+bus = PhotoImage(file='../assets/bus.png')
+fr1 = Frame(root)
+fr1.grid(row=0, column=0, columnspan=10)
+fr2 = Frame(root)
+fr2.grid(row=1, column=0, columnspan=10)
+Label(fr1, image=bus).grid(row=0, column=0, padx=w//2.4)
+Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
+fr3=Frame(root)
+fr3.grid(row=2, column=0, columnspan=10)
+Label(fr3,text="Name : Vaibhav Anand", font='arial 16', fg='blue').grid(row=0,column=0,pady=10)
+Label(fr3,text="Enrollment : 221B426", font='arial 16', fg='blue').grid(row=1,column=0,pady=10)
+Label(fr3,text="Mobile : 8423859380", font='arial 16', fg='blue').grid(row=2,column=0,pady=20)
+fr4 = Frame(root)
+fr4.grid(row=3, column=0, columnspan=10)
+Label(fr4, text="Submitted To : Dr. Mahesh Kumar", font='arial 25 bold', fg="Red", bg="Light Blue").grid(row=0, column=0, pady=10)
+Label(fr4, text="Project Based Learning", font='arial 20 bold', fg="Red", ).grid(row=1, column=0, pady=10)
+def fun(e=0):
+    root.destroy()
+root.bind("<KeyPress>",fun)
+root.mainloop()
 
 
 d=demo()

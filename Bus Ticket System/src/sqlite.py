@@ -31,16 +31,9 @@ def check_journey_details_with_seats(db_path, origin,destination, date):
     connection.close()
 
     return bus_details
-def add_new_booking_with_seat_update(db_path, bus_id, passenger_name, sex, seats, mobile_number, age, total_fare):
+def add_new_booking_with_seat_update(db_path, date,bus_id, passenger_name, sex, seats, mobile_number, age, total_fare):
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
-    # Check if seats are available in the bus
-    cursor.execute('SELECT capacity FROM BUSES WHERE id = ?', (bus_id,))
-    bus_capacity_result = cursor.fetchone()
-    if not bus_capacity_result:
-        connection.close()
-        return 0  # Bus not found
-    bus_capacity = bus_capacity_result[0]
     # Check if enough seats are available in the bus
     cursor.execute('SELECT avalable_seats FROM JOURNEY WHERE bus_id = ? AND avalable_seats >= ?', (bus_id, seats))
     available_seats_result = cursor.fetchone()
@@ -54,10 +47,7 @@ def add_new_booking_with_seat_update(db_path, bus_id, passenger_name, sex, seats
     ''', (bus_id, passenger_name, sex, seats, mobile_number, age, total_fare))
     # Update available seats in the journey
     updated_available_seats = available_seats_result[0] - seats
-    cursor.execute('UPDATE JOURNEY SET avalable_seats = ? WHERE bus_id = ?', (updated_available_seats, bus_id))
-    # Update available seats in the bus
-    updated_bus_available_seats = bus_capacity - seats
-    cursor.execute('UPDATE BUSES SET avalable_seats = ? WHERE id = ?', (updated_bus_available_seats, bus_id))
+    cursor.execute('UPDATE JOURNEY SET avalable_seats = ? WHERE bus_id = ? AND journey_date = ?', (updated_available_seats, bus_id, date))
     connection.commit()
     connection.close()
     return 2 
