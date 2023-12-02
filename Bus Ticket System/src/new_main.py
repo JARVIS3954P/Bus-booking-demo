@@ -92,7 +92,9 @@ class demo():
                 self.main_window()
             home=PhotoImage(file="../assets/home.png")
             home_button = Button(fr4,image=home, command=go_home)
-            home_button.grid(row=0,column=0,sticky='W')    
+            home_button.grid(row=0,column=0,sticky='W')
+
+            root.mainloop()    
 
 
     def seat_booking(self):
