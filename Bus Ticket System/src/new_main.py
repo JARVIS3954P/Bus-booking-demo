@@ -22,6 +22,7 @@ class demo():
         # Return arguments in a tuple
         return tuple(args)
 
+
     def main_window(self):
         root = Tk()
         h, w = root.winfo_screenheight(), root.winfo_screenwidth()
@@ -53,47 +54,46 @@ class demo():
         Label(fr3, text="For Admin Only", fg="red", font='arial 10').grid(row=3, column=2, pady=5)
         root.mainloop()
 
+
     def ticket_window(self,ph_no):
             root=Tk()
             h,w=root.winfo_screenheight(),root.winfo_screenwidth()
             root.geometry('%dx%d+0+0'%(w,h))
-            bus=PhotoImage(file='../assets/bus.png')
-            fr1=Frame(root)
-            fr1.grid(row=0,column=0,columnspan=10)
-            fr2=Frame(root)
-            fr2.grid(row=1,column=0,columnspan=10)
-            Label(fr1,image=bus).grid(row=0,column=0,padx=w//2.5)
-            Label(fr2,text='Online Bus Booking System',fg='red',bg='light Blue',font='arial 30 bold').grid(row=1,column=0,pady=40,padx=1)
-            Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=0,padx=2.5)
             messagebox.showinfo('info','Seat Booked.......')
-            fr=Frame(root,relief='groove',bd=3)
-            fr.grid(row=4,column=0,columnspan=50,padx=(w/15,0))
-            Label(fr,text='Passengers :',font='Arial 10 bold').grid(row=3,column=1)
-            Label(fr,text='Gender :',font='Arial 10 bold').grid(row=3,column=4)
-            Label(fr,text='No of seats:',font='Arial 10 bold').grid(row=4,column=1)
-            Label(fr,text='Phone:',font='Arial 10 bold').grid(row=4,column=4)
-            Label(fr,text='Age :',font='Arial 10 bold').grid(row=5,column=1)
-            Label(fr,text='Fare Rs :',font='Arial 10 bold').grid(row=5,column=4)
-            Label(fr,text='Booking Ref :',font='Arial 10 bold').grid(row=6,column=1)
-            Label(fr,text='Bus Detail :',font='Arial 10 bold').grid(row=6,column=4)
-            Label(fr,text='Travel on :',font='Arial 10 bold').grid(row=7,column=1)
-            Label(fr,text='Booked On :',font='Arial 10 bold').grid(row=7,column=4)
-            Label(fr,text='No of Seats:',font='Arial 10 bold').grid(row=8,column=1)
-            Label(fr,text='Boarding point :',font='Arial 10 bold').grid(row=8,column=4)
-            Label(fr,text='* Total amount of Rs 1000.00/- to be paid at the time of boarding',font='Arial 8').grid(row=9,columnspan=100,pady=10)
+            bus = PhotoImage(file='../assets/bus.png')
+            fr1 = Frame(root)
+            fr1.grid(row=0, column=0, columnspan=10)
+            fr2 = Frame(root)
+            fr2.grid(row=1, column=0, columnspan=10)
+            Label(fr1, image=bus).grid(row=0, column=0, padx=w//2.4)
+            Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
+            Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=2,padx=10)
+
+            fr3=Frame(root,relief='groove',bd=3)
+            fr3.grid(row=2,column=0,columnspan=50,padx=(w/15,0))
+            fr4=Frame(root,relief='groove',bd=3)
+            fr4.grid(row=3,column=0,columnspan=50,padx=(w/15,0))
+            Label(fr3,text='Passenger Name :',font='Arial 10 bold').grid(row=0,column=0, padx=20)
+            Label(fr3,text='Gender :',font='Arial 10 bold').grid(row=1,column=0, padx=20)
+            Label(fr3,text='Age :',font='Arial 10 bold').grid(row=2,column=0, padx=20)
+            Label(fr3,text='Phone:',font='Arial 10 bold').grid(row=3,column=0, padx=20)
+            Label(fr3,text='Seats Booked :',font='Arial 10 bold').grid(row=4,column=0, padx=20)
+            Label(fr3,text='Fare ₹ :',font='Arial 10 bold').grid(row=5,column=0, padx=20)
+            Label(fr3,text='Bus Detail :',font='Arial 10 bold').grid(row=0,column=1)
+            Label(fr3,text='Operator Contact :',font='Arial 10 bold').grid(row=1,column=1)
+            Label(fr3,text='Booking Ref :',font='Arial 10 bold').grid(row=2,column=1)
+            Label(fr3,text='Travel on :',font='Arial 10 bold').grid(row=3,column=1)
+            Label(fr3,text='Booked On :',font='Arial 10 bold').grid(row=4,column=1)
+            Label(fr3,text='Boarding Point',font='Arial 10 bold').grid(row=5,column=1)
+            Label(fr3,text='* Total amount of ₹ 1000.00/- to be paid at the time of boarding',font='Arial 8').grid(row=6,columnspan=100,pady=10)
 
             def go_home():
                 root.destroy()
                 self.main_window()
             home=PhotoImage(file="../assets/home.png")
-            home_button = Button(root,image=home, command=go_home)
-            home_button.grid(row=5,column=9,pady=20,sticky='W')
-            def go_back():
-                root.destroy()
-                self.admin_only()
-            back_button = Button(root,text="Back", command=go_back)
-            back_button.grid(row=5,column=10,pady=20,sticky='W')
-            root.mainloop()    
+            home_button = Button(fr4,image=home, command=go_home)
+            home_button.grid(row=0,column=0,sticky='W')    
+
 
     def seat_booking(self):
         root = Tk()
@@ -243,7 +243,6 @@ class demo():
         back_button = Button(fr3, text="Back", command=go_back)
         back_button.grid(row=5, column=4)
         root.mainloop()
-
 
 
     def check_bus_details(self):
