@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-
+import tkinter as tk
 class demo():
 
 #for main window
@@ -103,7 +103,7 @@ class demo():
             def cred():
                 id = selected_bus_id
                 Label(fr6, text="FILL PASSENGER DETAILS TO BOOK THIS TICKET", font="arial 24 bold", bg='light blue', fg='red').grid(row=11, column=0)
-                Label(fr5, text="Name").grid(row=1, column=0, padx=10)
+                Label(fr5, text="Name:").grid(row=1, column=0, padx=10)
                 Entry(fr5).grid(row=1, column=1, padx=10)
                 
                 Label(fr5, text="Gender").grid(row=1, column=2, padx=10)
@@ -111,13 +111,13 @@ class demo():
                 gender_combo = ttk.Combobox(fr5, values=gender_options)
                 gender_combo.grid(row=1, column=3, padx=10)
                 
-                Label(fr5, text="No of seats").grid(row=1, column=4, padx=10)
+                Label(fr5, text="No of seats:").grid(row=1, column=4, padx=10)
                 Entry(fr5).grid(row=1, column=5, padx=10)
                 
-                Label(fr5, text="mob no").grid(row=1, column=6, padx=10)
+                Label(fr5, text="Mobile No:").grid(row=1, column=6, padx=10)
                 Entry(fr5).grid(row=1, column=7, padx=10)
                 
-                Label(fr5, text="age ").grid(row=1, column=8, padx=10)
+                Label(fr5, text="Age:").grid(row=1, column=8, padx=10)
                 Entry(fr5).grid(row=1, column=9, padx=10)
                 
                 Button(fr5, text="Book Seat",font='bold', fg='black', bg='green2', command = show_book).grid(row=1, column=10, padx=10)
@@ -140,7 +140,7 @@ class demo():
 
     #ticket booked window
     def ticket_window(self):
-        root=Tk()
+        root=tk.Tk()
         h,w=root.winfo_screenheight(),root.winfo_screenwidth()
         root.geometry('%dx%d+0+0'%(w,h))
         bus=PhotoImage(file='../assets/bus.png')
@@ -148,6 +148,7 @@ class demo():
         fr1.grid(row=0,column=0,columnspan=10)
         fr2=Frame(root)
         fr2.grid(row=1,column=0,columnspan=10)
+        
         Label(fr1,image=bus).grid(row=0,column=0,padx=w//2.5)
         Label(fr2,text='Online Bus Booking System',fg='red',bg='light Blue',font='arial 30 bold').grid(row=1,column=0,pady=40,padx=1)
         Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=0,padx=2.5)
@@ -167,6 +168,17 @@ class demo():
         Label(fr,text='No of Seats:',font='Arial 10 bold').grid(row=8,column=1)
         Label(fr,text='Boarding point :',font='Arial 10 bold').grid(row=8,column=4)
         Label(fr,text='* Total amount of Rs 1000.00/- to be paid at the time of boarding',font='Arial 8').grid(row=9,columnspan=100,pady=10)
+
+        popup = tk.Toplevel(root)
+        popup.title("Booking")
+        popup.geometry("300x200")
+        
+        label = tk.Label(popup, text="Booking Successful!")
+        label.grid(row=0,column=0,padx=20, pady=30)
+        
+        ok_button = tk.Button(popup, text="Ok", command=popup.destroy)
+        ok_button.pack(pady=10)
+        
         root.mainloop()
 
 #for checking bus details
