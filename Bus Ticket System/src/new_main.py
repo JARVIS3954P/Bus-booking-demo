@@ -1,9 +1,25 @@
 from tkinter import *
-from tkinter import ttk
-import tkinter as tk
+from sqlite import *
+import sqlite3
+from datetime import datetime
+from tkinter import messagebox
+
+db_path = 'project.db'
+
+
+
 class demo():
 
-#for main window
+
+    def process_arguments(*args):
+    # Check if any argument is null or an empty string
+        for arg in args:
+            if arg is None or (isinstance(arg, str) and arg.strip() == ''):
+                return 0  # Return 0 if an error occurs
+
+        # Return arguments in a tuple
+        return tuple(args)
+
     def main_window(self):
         root = Tk()
         h, w = root.winfo_screenheight(), root.winfo_screenwidth()
@@ -36,7 +52,7 @@ class demo():
         root.mainloop()
 
 
-#for seat booking
+
     def seat_booking(self):
         root = Tk()
         h, w = root.winfo_screenheight(), root.winfo_screenwidth()
@@ -51,9 +67,7 @@ class demo():
         fr4=Frame(root)
         fr4.grid(row=3, column=0, columnspan=10)
         fr5=Frame(root)
-        fr5.grid(row=5,column=0,columnspan=10)
-        fr6=Frame(root)
-        fr6.grid(row=4,column=0,columnspan=10,pady=10)
+        fr5.grid(row=4,column=0,columnspan=10)
         Label(fr1, image=bus).grid(row=0, column=0, padx=root.winfo_screenwidth()// 2.4)
         Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
         Label(fr3, text="Enter Journey Details", font='arial 16 bold', fg="green4", bg="green2").grid(row=0, column=2)
@@ -76,11 +90,9 @@ class demo():
         journey_date_entry.grid(row=3, column=2)
         placeholder_label = Label(fr3, text="dd-mm-yyyy", fg="red")
         placeholder_label.grid(row=4, column=2)
-
         
-        def show_bus():
+        def show_bus(tpl):
             
-            tpl = ((1,"Kamla","AC 2x2",24,30,1000),(2,"Hans","Non-AC 1x1",29,30,1400))
             #check_journey_details_with_seats(to.get(),frm.get(),date.get())
             Label(fr4, text="Select Bus",font='arial 16 bold', fg='green2').grid(row=0,column=0,padx=10)
             Label(fr4, text="Operator",font='arial 16 bold', fg='green2').grid(row=0,column=1,padx=10)
@@ -88,48 +100,77 @@ class demo():
             Label(fr4, text="Seat Available",font='arial 16 bold', fg='green2').grid(row=0,column=3,padx=10)
             Label(fr4, text="Fare",font='arial 16 bold', fg='green2').grid(row=0,column=4,padx=25)
             global selected_bus_id
+            global busfare
             selected_bus_id = None
-            def button_click(id):
+            busfare = None
+            def button_click(id,fare):
                 global selected_bus_id
                 selected_bus_id = id
-            def show_bus():
+                global busfare
+                busfare = fare 
+            def show_tuple():
                 for row, (bus_id, operator,bus_type,a,t,fare) in enumerate(tpl):
-                    Button(fr4, text = "Bus_"+str(bus_id), font = 'arial 12 bold', fg='black', command = lambda id=bus_id: button_click(id)).grid(row=row+1,column=0,padx=10)
+                    Button(fr4, text = "Bus_"+str(bus_id), font = 'arial 12 bold', fg='black', command=lambda id=bus_id, fare=fare: button_click(id, fare)).grid(row=row+1,column=0,padx=10)
                     Label(fr4, text=operator,font='arial 12 bold', fg='black').grid(row=row+1,column=1,padx=10)
                     Label(fr4, text=operator,font='arial 12 bold', fg='black').grid(row=row+1,column=2,padx=10)
                     Label(fr4, text=str(a)+"/"+str(t),font='arial 12 bold', fg='black').grid(row=row+1,column=3,padx=10)
                     Label(fr4, text=str(fare),font='arial 12 bold', fg='black').grid(row=row+1,column=4,padx=25)
-            show_bus()
+            show_tuple()
             def cred():
-                id = selected_bus_id
-                Label(fr6, text="FILL PASSENGER DETAILS TO BOOK THIS TICKET", font="arial 24 bold", bg='light blue', fg='red').grid(row=11, column=0)
-                Label(fr5, text="Name:").grid(row=1, column=0, padx=10)
-                Entry(fr5).grid(row=1, column=1, padx=10)
+                global busfare
+                f = busfare
+                global selected_bus_id
+                bus_id = selected_bus_id
+        
+                passenger_name = StringVar()
+                sex = StringVar()
+                seats = IntVar()
+                mobile_number = StringVar() 
+                age = IntVar()
+
+                Label(fr5,text="FILL PASSENGER DETAILS TO BOOK THIS TICKET").grid(row=0,column=0)
+                Label(fr5,text="Name").grid(row=1,column=0)
+                Entry(fr5,textvariable= passenger_name).grid(row=1,column=1)
+                Label(fr5,text="Gender").grid(row=1,column=2)
+                Entry(fr5,textvariable= sex).grid(row=1,column=3)
+                Label(fr5,text="No of sets").grid(row=1,column=4)
+                Entry(fr5,textvariable=seats).grid(row=1,column=5)
+                Label(fr5,text="mob no").grid(row=1,column=6)
+                Entry(fr5,textvariable= mobile_number).grid(row=1,column=7)
+                Label(fr5,text="age ").grid(row=1,column=8)
+                Entry(fr5,textvariable = age).grid(row=1,column=9)
+                def insert():
+                    tmp = self.process_arguments(bus_id,passenger_name.get(),sex.get(),seats.get(),mobile_number.get(),age.get(),f*seats.get()) 
+                    if tmp == 0:
+                        print("Error msg")
+                    else:
+                        add_new_booking_with_seat_update(db_path,tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6])
+
                 
-                Label(fr5, text="Gender").grid(row=1, column=2, padx=10)
-                gender_options = ['Male', 'Female', 'Others']
-                gender_combo = ttk.Combobox(fr5, values=gender_options)
-                gender_combo.grid(row=1, column=3, padx=10)
-                
-                Label(fr5, text="No of seats:").grid(row=1, column=4, padx=10)
-                Entry(fr5).grid(row=1, column=5, padx=10)
-                
-                Label(fr5, text="Mobile No:").grid(row=1, column=6, padx=10)
-                Entry(fr5).grid(row=1, column=7, padx=10)
-                
-                Label(fr5, text="Age:").grid(row=1, column=8, padx=10)
-                Entry(fr5).grid(row=1, column=9, padx=10)
-                
-                Button(fr5, text="Book Seat",font='bold', fg='black', bg='green2', command = show_book).grid(row=1, column=10, padx=10)
-            proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)                
-                        
-        show_bus_button = Button(fr3, text="Show Bus",font='arial 12 bold', bg="green2", fg="green4", command=show_bus)
+                Button(fr5,text ="Book Seat",command = insert).grid(row=1,column=10)
+            proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)
+
+        
+
+        def insert():
+            def is_valid_date_format(date_str):
+                try:
+                    # Attempt to parse the date string using the specified format
+                    datetime.strptime(date_str, '%Y-%m-%d')
+                    return 1
+                except ValueError:
+                    # If an exception is raised, the format is not valid
+                    return 0
+            tpl = self.process_arguments(frm.get(),to.get(),date.get())
+            if is_valid_date_format(date.get()) == 0:
+                print()
+            else:
+                tpl = ((1,"Kamla","AC 2x2",24,30,1000),(2,"Hans","Non-AC 1x1",29,30,1400))
+                #tpl = check_journey_details_with_seats(db_path,tpl[0],tpl[1],tpl[2])
+                show_bus(tpl)                       
+        show_bus_button = Button(fr3, text="Show Bus",font='arial 12 bold', bg="green2", fg="green4", command=insert)
         show_bus_button.grid(row=5, column=2, pady=10)
         
-        def show_book():
-            root.destroy()
-            self.ticket_window()
-
         def go_back():
             root.destroy()
             self.main_window()
@@ -138,50 +179,7 @@ class demo():
         root.mainloop()
 
 
-    #ticket booked window
-    def ticket_window(self):
-        root=tk.Tk()
-        h,w=root.winfo_screenheight(),root.winfo_screenwidth()
-        root.geometry('%dx%d+0+0'%(w,h))
-        bus=PhotoImage(file='../assets/bus.png')
-        fr1=Frame(root)
-        fr1.grid(row=0,column=0,columnspan=10)
-        fr2=Frame(root)
-        fr2.grid(row=1,column=0,columnspan=10)
-        
-        Label(fr1,image=bus).grid(row=0,column=0,padx=w//2.5)
-        Label(fr2,text='Online Bus Booking System',fg='red',bg='light Blue',font='arial 30 bold').grid(row=1,column=0,pady=40,padx=1)
-        Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=0,padx=2.5)
-        #showinfo('info','Seat Booked.......')
-        fr=Frame(root,relief='groove',bd=3)
-        fr.grid(row=4,column=0,columnspan=50,padx=(w/15,0))
-        Label(fr,text='Passengers :',font='Arial 10 bold').grid(row=3,column=1)
-        Label(fr,text='Gender :',font='Arial 10 bold').grid(row=3,column=4)
-        Label(fr,text='No of seats:',font='Arial 10 bold').grid(row=4,column=1)
-        Label(fr,text='Phone:',font='Arial 10 bold').grid(row=4,column=4)
-        Label(fr,text='Age :',font='Arial 10 bold').grid(row=5,column=1)
-        Label(fr,text='Fare Rs :',font='Arial 10 bold').grid(row=5,column=4)
-        Label(fr,text='Booking Ref :',font='Arial 10 bold').grid(row=6,column=1)
-        Label(fr,text='Bus Detail :',font='Arial 10 bold').grid(row=6,column=4)
-        Label(fr,text='Travel on :',font='Arial 10 bold').grid(row=7,column=1)
-        Label(fr,text='Booked On :',font='Arial 10 bold').grid(row=7,column=4)
-        Label(fr,text='No of Seats:',font='Arial 10 bold').grid(row=8,column=1)
-        Label(fr,text='Boarding point :',font='Arial 10 bold').grid(row=8,column=4)
-        Label(fr,text='* Total amount of Rs 1000.00/- to be paid at the time of boarding',font='Arial 8').grid(row=9,columnspan=100,pady=10)
 
-        popup = tk.Toplevel(root)
-        popup.title("Booking")
-        popup.geometry("300x200")
-        
-        label = tk.Label(popup, text="Booking Successful!")
-        label.grid(row=0,column=0,padx=20, pady=30)
-        
-        ok_button = tk.Button(popup, text="Ok", command=popup.destroy)
-        ok_button.pack(pady=10)
-        
-        root.mainloop()
-
-#for checking bus details
     def check_bus_details(self):
         root = Tk()
         h, w = root.winfo_screenheight(), root.winfo_screenwidth()
@@ -216,7 +214,7 @@ class demo():
         root.mainloop()
 
 
-#For admin to adding to database  
+
     def admin_only(self):
         root = Tk()
         h,w=root.winfo_screenheight(),root.winfo_screenwidth()
@@ -258,242 +256,51 @@ class demo():
         home_button.grid(row=4,column=10,pady=20,sticky='W')
         root.mainloop()        
     
-
-#Options for admin  
-    def add_bus_details(self):
+    def add_station(self):
         root = Tk()
-        w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+        h, w = root.winfo_screenheight(), root.winfo_screenwidth()
         root.geometry('%dx%d+0+0' % (w, h))
+        bus = PhotoImage(file='../assets/bus.png')
+        fr1 = Frame(root)
+        fr1.grid(row=0, column=0, columnspan=10)
+        fr2 = Frame(root)
+        fr2.grid(row=1, column=0, columnspan=10)
+        Label(fr1, image=bus).grid(row=0, column=0, padx=w//2.4)
+        Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
+        t2 = Label(fr2, text='Add Station Details', bg='gray20', fg='green3', font='Arial 22 bold').grid(row=2, column=2, padx=w // 3, pady=20)
+        fr3=Frame(root)
+        fr3.grid(row=2, column=0, columnspan=10)
+        station_id = IntVar()
+        station_name = StringVar()
+        Label(fr3,text="Sation ID", font='arial 12 ').grid(row=0,column=0,padx=10)
+        sId_entry=Entry(fr3,textvariable = station_id)
+        sId_entry.grid(row=0,column=1,padx=10)
+        Label(fr3,text="Sation Name", font='arial 12 ').grid(row=0,column=2,padx=10)
+        sName_entry=Entry(fr3,textvariable = station_name)
+        sName_entry.grid(row=0,column=3,padx=10)
+        def insert():
+            if insert_station_data(db_path,station_id.get(),station_name.get()):
+                messagebox.showinfo("Info", "Sucess!")
+            else:
+                messagebox.showinfo("Info","Error!")
 
-        import sqlite3
-        con = sqlite3.connect('PYthonBusProj.db')
-        cur = con.cursor()
-
-
-        img = PhotoImage(file="../assets/bus.png")
-        img1 = PhotoImage(file="../assets/home.png")
-        bus = Label(root, image=img)
-        bus.grid(row=0, column=0, columnspan=20, padx=w // 3)
-        t1 = Label(root, text='Online Bus Booking System', bg='light blue', fg='Red', font='Arial 32 bold')
-        t1.grid(row=1, column=0, columnspan=20, padx=w // 3)
-        t2 = Label(root, text='Add Bus Details', bg='gray20', fg='green3', font='Arial 22 bold')
-        t2.grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
-
-
-
-        def getvals():
-
-            cur.execute("""insert into bus (busID,bus_type,bus_opid,capacity,fare,bus_rid)values({},'{}',{},{},{},{})""".format(busid_f.get(), clicked.get(), opid_f.get(), CapacitY_f.get(), farE_f.get(), opid_f.get(),Routeid_f.get()))
-            con.commit()
-
-            op1 = Label(root,text='{} {} {} {} {} {}'.format(busid_f.get(), clicked.get(), CapacitY_f.get(), farE_f.get(), opid_f.get(),Routeid_f.get()),font='Arial 12')
-
-
-            op1.grid(row=4, columnspan=13)
-            showinfo('Operator Entry Updated', 'Bus Details updated successfully')
-
-
-            print(f"{busid_f.get(),clicked.get(),  CapacitY_f.get(), farE_f.get(), opid_f.get(),Routeid_f.get()} ")
-
-            with open("add_busdetail.txt", "a") as f:
-                f.write(f"{busid_f.get(), clicked.get(),  CapacitY_f.get(), farE_f.get(), opid_f.get(),Routeid_f.get()}\n ")
-
-
-
-        busid = Label(root, text='Bus ID', font='Arial 14')
-        bustype = Label(root, text='Bus type', font='Arial 14')
-        CapacitY = Label(root, text='Capacity', font='Arial 14')
-        farE = Label(root, text='Fare ₹', font='Arial 14')
-        opid = Label(root, text='Operator ID', font='Arial 14')
-        Routeid = Label(root, text='Route ID', font='Arial 14')
-
-
-        options = [
-                "AC 2x2",
-                "AC 3x2",
-                "Non AC 2x2",
-                "Non AC 3x2",
-                "AC-Sleeper 2x1",
-                "Non AC-Sleeper 2x1"
-            ]
-        clicked = StringVar()
-        clicked.set("Bus Type")
-        drop = OptionMenu(root, clicked, *options)
-
-        # Tkinter variable for storing entries
-        busid_f = StringVar()
-        Routeid_f = StringVar()
-        CapacitY_f = StringVar()
-        farE_f = StringVar()
-        opid_f = StringVar()
-
-        #Entries for our form
-        busid_f = Entry(root, textvariable=busid_f)
-        Routeid_f = Entry(root, textvariable=Routeid_f)
-        CapacitY_f = Entry(root, textvariable=CapacitY_f)
-        farE_f = Entry(root, textvariable=farE_f)
-        opid_f = Entry(root, textvariable=opid_f)
-
-
-        def checking():
-            cur.execute("SELECT * FROM bus")
-            f=cur.fetchall()
-            print(f)
-
-
-        def addnew():
-            op1 = Label(root, text='{} {} {} {} {}'.format(busid_f.get(),clicked.get(), CapacitY_f.get(), farE_f.get(), opid_f.get(), Routeid_f.get()),
-                        font='Arial 12')
-            op1.grid(row=4, columnspan=13)
-            showinfo('Operator Entry Updated', 'Bus Details updated successfully')
-
-        addb = Button(root, text='Add Bus', bg='SpringGreen2', font='Arial 14', command=getvals)
-        eb = Button(root, text='Edit Bus', bg='SpringGreen2', font='Arial 14')
-
-        #check_db = Button(root, text='Check', bg='SpringGreen2', font='Arial 14', command=checking)
-        #check_db.grid(row=10, column=11)
-
-        busid.grid(row=3, column=1)
-        busid_f.grid(row=3, column=2)
-        bustype.grid(row=3, column=3)
-        drop.grid(row=3, column=4)
-        CapacitY.grid(row=3, column=5)
-        CapacitY_f.grid(row=3, column=6)
-        farE.grid(row=3, column=7)
-        farE_f.grid(row=3, column=8)
-        opid.grid(row=3, column=9)
-        opid_f.grid(row=3, column=10)
-        Routeid.grid(row=3, column=11)
-        Routeid_f.grid(row=3, column=12)
-        addb.grid(row=5, column=7)
-        eb.grid(row=5, column=8)
-
+        add_button=Button(fr3,text="Add", bg="green2",command = insert)
+        add_button.grid(row=0,column=4,padx=10)
+        
         def go_home():
             root.destroy()
             self.main_window()
         home=PhotoImage(file="../assets/home.png")
-        home_button = Button(root,image=home, command=go_home)
-        home_button.grid(row=5,column=9,pady=20,sticky='W')
+        home_button = Button(fr3,image=home, command=go_home)
+        home_button.grid(row=0,column=5,pady=20,padx=5,sticky='W')
 
         def go_back():
             root.destroy()
             self.admin_only()
-        back_button = Button(root,text="Back", command=go_back)
-        back_button.grid(row=5,column=10,pady=20,sticky='W')
-
-        root.mainloop()        
+        back_button = Button(fr3,text="Back", command=go_back)
+        back_button.grid(row=0,column=6,pady=20,padx=5,sticky='W')
         
-        
-        
-    def add_bus_operator(self):
-        root = Tk()
-        w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-        root.geometry('%dx%d+0+0' % (w, h))
-
-        img = PhotoImage(file="../assets/bus.png")
-        img1 = PhotoImage(file="../assets/home.png")
-        bus = Label(root, image=img)
-        bus.grid(row=0, column=0, columnspan=20, padx=w // 3)
-        t1 = Label(root, text='Online Bus Booking System', bg='light blue', fg='Red', font='Arial 32 bold')
-        t1.grid(row=1, column=0, columnspan=20, padx=w // 3)
-        t2 = Label(root, text='Add Bus Operator Details', bg='white smoke', fg='green3', font='Arial 22 bold')
-        t2.grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
-
-        import sqlite3
-
-        con = sqlite3.connect('PYthonBusProj.db')
-        cur = con.cursor()
-
-
-        def getvals():
-
-            cur.execute("""insert into operator (opid,name,phone,address,email)values({},'{}',{},'{}','{}')""".format(int(float(opf.get())), nf.get(), int(phf.get()), addf.get(), mf.get()))
-            con.commit()
-
-            op1 = Label(root, text='{} {} {} {} {}'.format(opf.get(), nf.get(), addf.get(), phf.get(), mf.get()),
-                        font='Arial 12')
-            op1.grid(row=4, columnspan=13)
-            showinfo('Operator Entry Updated', 'Operator Record updated successfully')
-
-            print(f"{opf.get(), nf.get(), addf.get(), phf.get(), mf.get()} ")
-
-            with open("operator_detail.txt", "a") as f:
-                f.write(f"{opf.get(), nf.get(), addf.get(), phf.get(), mf.get()}\n ")
-
-
-
-        opid = Label(root, text='Operator ID', font='Arial 14')
-        name = Label(root, text='Name', font='Arial 14')
-        add = Label(root, text='Address', font='Arial 14')
-        ph = Label(root, text='Phone', font='Arial 14')
-        mail = Label(root, text='Email', font='Arial 14')
-
-
-
-        # Tkinter variable for storing entries
-        opf = StringVar()
-        nf = StringVar()
-        addf = StringVar()
-        phf = StringVar()
-        mf = StringVar()
-
-        #Entries for our form
-
-        opf = Entry(root, textvariable=opf)
-        nf = Entry(root, textvariable=nf)
-        addf = Entry(root, textvariable=addf)
-        phf = Entry(root, textvariable=phf)
-        mf = Entry(root, textvariable=mf)
-
-
-        def checking():
-            cur.execute("SELECT * FROM operator")
-            f=cur.fetchall()
-            print(f)
-
-
-        def addnew():
-            op1 = Label(root, text='{} {} {} {} {}'.format(opf.get(), nf.get(), addf.get(), phf.get(), mf.get()),
-                        font='Arial 12')
-            op1.grid(row=4, columnspan=13)
-            showinfo('Operator Entry Updated', 'Operator Record updated successfully')
-
-
-        addb = Button(root, text='Add', bg='SpringGreen2', font='Arial 14', command=getvals)
-        eb = Button(root, text='Edit', bg='SpringGreen2', font='Arial 14')
-
-        #check_db = Button(root, text='Check', bg='SpringGreen2', font='Arial 14', command=checking)
-        #check_db.grid(row=10, column=11)
-
-        opid.grid(row=3, column=1)  # stick=W or E
-        opf.grid(row=3, column=2)
-        name.grid(row=3, column=3)
-        nf.grid(row=3, column=4)
-        add.grid(row=3, column=5)
-        addf.grid(row=3, column=6)
-        ph.grid(row=3, column=7)
-        phf.grid(row=3, column=8)
-        mail.grid(row=3, column=9)
-        mf.grid(row=3, column=10)
-        addb.grid(row=3, column=11)
-        eb.grid(row=3, column=12)
-
-        def go_home():
-            root.destroy()
-            self.main_window()
-        home=PhotoImage(file="../assets/home.png")
-        home_button = Button(root,image=home, command=go_home)
-        home_button.grid(row=5,column=9,pady=20,sticky='W')
-
-        def go_back():
-            root.destroy()
-            self.admin_only()
-        back_button = Button(root,text="Back", command=go_back)
-        back_button.grid(row=5,column=10,pady=20,sticky='W')
-
         root.mainloop()
-
-
 
     def add_bus_route(self):
         root = Tk()
@@ -507,59 +314,44 @@ class demo():
         t1.grid(row=1, column=0, columnspan=20, padx=w // 3)
         t2 = Label(root, text='Add Bus Route Details', bg='gray20', fg='green3', font='Arial 22 bold')
         t2.grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
-
-
-        import sqlite3
-
-        con = sqlite3.connect('PYthonBusProj.db')
-        cur = con.cursor()
-
-
-
-        def addnew():
-            '''routef.delete(0, END)
-            snf.delete(0, END)
-            staion_id_f.delete(0, END)'''
-
-
-            #cur.execute("""select rid from route""".format(c.get))
-
-            cur.execute("""insert into route(rid,stid,station_name)values({},{},"{}")""".format(routef.get(),snf.get(),staion_id_f.get()))
-            con.commit()
-
-            op1 = Label(root, text='{} {} {} '.format(routef.get(), snf.get(), staion_id_f.get()),font='Arial 12')
-            op1.grid(row=6, columnspan=13)
-            showinfo('Operator Entry Updated', 'Bus Route Added successfully')
-
-
-        def checking():
-            cur.execute("SELECT * FROM route")
-            f=cur.fetchall()
-            print(f)
+        routeid = IntVar()
+        d_sname = StringVar()
+        o_sname = StringVar()
 
         Routeid = Label(root, text='Route ID', font='Arial 14')
-        station_name = Label(root, text='Origin Station', font='Arial 14')
-        Station_id = Label(root, text='Destination Station', font='Arial 14')
+        origin_sation = Label(root, text='Origin Station', font='Arial 14')
+        destination_satation = Label(root, text='Destination Station', font='Arial 14')
 
-        routef = Entry(root)
-        snf = Entry(root)
-        staion_id_f = Entry(root)
+        routef = Entry(root,textvariable= routeid)
+        o_sname = Entry(root,textvariable = o_sname)
+        d_sname = Entry(root,textvariable = d_sname)
+
+        def insert():
+            if add_new_route(db_path,routeid.get(),d_sname.get(),o_sname.get()):
+                messagebox.showinfo("Info", "Sucess!")
+            else:
+                messagebox.showinfo("Info","Error!")
+
+        def update():
+            if delete_route_by_id(db_path,routeid.get()):
+                messagebox.showinfo("Info", "Sucess!")
+            else:
+                messagebox.showinfo("Info","Error!")
+                
 
 
 
-        addb = Button(root, text='Add Route', bg='SpringGreen2', font='Arial 14', command=addnew)
-        eb = Button(root, text='Delete Route', bg='SpringGreen2',fg='Red', font='Arial 14')
 
+        addb = Button(root, text='Add Route', bg='SpringGreen2', font='Arial 14', command=insert)
+        eb = Button(root, text='Delete Route', bg='SpringGreen2',fg='Red', font='Arial 14', command= update)
 
-        #check_db = Button(root, text='Check', bg='SpringGreen2', font='Arial 14', command=checking)
-        #check_db.grid(row=10, column=11)
 
         Routeid.grid(row=5, column=3)
         routef.grid(row=5, column=4)
-        station_name.grid(row=5, column=5)
-        snf.grid(row=5, column=6)
-        Station_id.grid(row=5, column=7)
-        staion_id_f.grid(row=5, column=8)
+        origin_sation.grid(row=5, column=5)
+        o_sname.grid(row=5, column=6)
+        destination_satation.grid(row=5, column=7)
+        d_sname.grid(row=5, column=8)
         addb.grid(row=5, column=9)
         eb.grid(row=5, column=10)
 
@@ -578,8 +370,155 @@ class demo():
 
         root.mainloop()
 
+    def add_bus_operator(self):
+        root = Tk()
+        w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+        root.geometry('%dx%d+0+0' % (w, h))
+        img = PhotoImage(file="../assets/bus.png")
+        img1 = PhotoImage(file="../assets/home.png")
+        bus = Label(root, image=img)
+        bus.grid(row=0, column=0, columnspan=20, padx=w // 3)
+        t1 = Label(root, text='Online Bus Booking System', bg='light blue', fg='Red', font='Arial 32 bold')
+        t1.grid(row=1, column=0, columnspan=20, padx=w // 3)
+        t2 = Label(root, text='Add Bus Operator Details', bg='white smoke', fg='green3', font='Arial 22 bold')
+        t2.grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
+        opid = Label(root, text='Operator ID', font='Arial 14')
+        name = Label(root, text='Name', font='Arial 14')
+        add = Label(root, text='Address', font='Arial 14')
+        ph = Label(root, text='Phone', font='Arial 14')
+        mail = Label(root, text='Email', font='Arial 14')
+        # Tkinter variable for storing entries
+        opf = IntVar()
+        nf = StringVar()
+        addf = StringVar()
+        phf = StringVar()
+        mf = StringVar()
+        #Entries for our form
+        opf = Entry(root, textvariable=opf)
+        nf = Entry(root, textvariable=nf)
+        addf = Entry(root, textvariable=addf)
+        phf = Entry(root, textvariable=phf)
+        mf = Entry(root, textvariable=mf)
 
+        def insert():
+            if add_new_operator(db_path,opf.get(),nf.get(),addf.get(),phf.get(),mf.get()):
+                 messagebox.showinfo("Sucess")
+            else:
+                 messagebox.showinfo("Error")                 
+        def update():
+            if update_operator(db_path,opf.get(),nf.get(),addf.get(),phf.get(),mf.get()):
+                 messagebox.showinfo("Sucess")
+            else:
+                 messagebox.showinfo("Error")
+        addb = Button(root, text='Add', bg='SpringGreen2', font='Arial 14', command=insert)
+        eb = Button(root, text='Edit', bg='SpringGreen2', font='Arial 14',command=update)
+        opid.grid(row=3, column=1) 
+        opf.grid(row=3, column=2)
+        name.grid(row=3, column=3)
+        nf.grid(row=3, column=4)
+        add.grid(row=3, column=5)
+        addf.grid(row=3, column=6)
+        ph.grid(row=3, column=7)
+        phf.grid(row=3, column=8)
+        mail.grid(row=3, column=9)
+        mf.grid(row=3, column=10)
+        addb.grid(row=3, column=11)
+        eb.grid(row=3, column=12)
+        def go_home():
+            root.destroy()
+            self.main_window()
+        home=PhotoImage(file="../assets/home.png")
+        home_button = Button(root,image=home, command=go_home)
+        home_button.grid(row=5,column=9,pady=20,sticky='W')
+        def go_back():
+            root.destroy()
+            self.admin_only()
+        back_button = Button(root,text="Back", command=go_back)
+        back_button.grid(row=5,column=10,pady=20,sticky='W')
+        root.mainloop()
 
+    def add_bus_details(self):
+        root = Tk()
+        w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+        root.geometry('%dx%d+0+0' % (w, h))
+        img = PhotoImage(file="../assets/bus.png")
+        img1 = PhotoImage(file="../assets/home.png")
+        bus = Label(root, image=img)
+        bus.grid(row=0, column=0, columnspan=20, padx=w // 3)
+        t1 = Label(root, text='Online Bus Booking System', bg='light blue', fg='Red', font='Arial 32 bold')
+        t1.grid(row=1, column=0, columnspan=20, padx=w // 3)
+        t2 = Label(root, text='Add Bus Details', bg='gray20', fg='green3', font='Arial 22 bold')
+        t2.grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
+        busid = Label(root, text='Bus ID', font='Arial 14')
+        bustype = Label(root, text='Bus type', font='Arial 14')
+        CapacitY = Label(root, text='Capacity', font='Arial 14')
+        farE = Label(root, text='Fare Rs', font='Arial 14')
+        opid = Label(root, text='Operator ID', font='Arial 14')
+        Routeid = Label(root, text='Route ID', font='Arial 14')
+        options = [
+                "AC 2x2",
+                "AC 3x2",
+                "Non AC 2x2",
+                "Non AC 3x2",
+                "AC-Sleeper 2x1",
+                "Non AC-Sleeper 2x1"
+            ]
+        clicked = StringVar()
+        clicked.set("Bus Type")
+        drop = OptionMenu(root, clicked, *options)
+        # Tkinter variable for storing entries
+        busid_f = IntVar()
+        Routeid_f = IntVar()
+        CapacitY_f = IntVar()
+        farE_f = IntVar()
+        opid_f = IntVar()
+        #Entries for our form
+        busid_f = Entry(root, textvariable=busid_f)
+        Routeid_f = Entry(root, textvariable=Routeid_f)
+        CapacitY_f = Entry(root, textvariable=CapacitY_f)
+        farE_f = Entry(root, textvariable=farE_f)
+        opid_f = Entry(root, textvariable=opid_f)        
+        def insert():
+            if add_new_bus(db_path,busid.get(),clicked.get(),CapacitY_f.get(),farE_f.get(),opid_f.get(),Routeid_f.get()):
+                messagebox.showinfo("Info", "Sucess")
+            else:
+                messagebox.showinfo("Info", "Error")
+
+        def update():
+            if update_bus(db_path,busid.get(),clicked.get(),CapacitY_f.get(),farE_f.get(),opid_f.get(),Routeid_f.get()):
+                messagebox.showinfo("Info", "Sucess")
+            else:
+                messagebox.showinfo("Info", "Error")
+
+        addb = Button(root, text='Add Bus', bg='SpringGreen2', font='Arial 14', command=insert)
+        eb = Button(root, text='Edit Bus', bg='SpringGreen2', font='Arial 14',command =update)
+        busid.grid(row=3, column=1)
+        busid_f.grid(row=3, column=2)
+        bustype.grid(row=3, column=3)
+        drop.grid(row=3, column=4)
+        CapacitY.grid(row=3, column=5)
+        CapacitY_f.grid(row=3, column=6)
+        farE.grid(row=3, column=7)
+        farE_f.grid(row=3, column=8)
+        opid.grid(row=3, column=9)
+        opid_f.grid(row=3, column=10)
+        Routeid.grid(row=3, column=11)
+        Routeid_f.grid(row=3, column=12)
+        addb.grid(row=5, column=7)
+        eb.grid(row=5, column=8)
+        def go_home():
+            root.destroy()
+            self.main_window()
+        home=PhotoImage(file="../assets/home.png")
+        home_button = Button(root,image=home, command=go_home)
+        home_button.grid(row=5,column=9,pady=20,sticky='W')
+        def go_back():
+            root.destroy()
+            self.admin_only()
+        back_button = Button(root,text="Back", command=go_back)
+        back_button.grid(row=5,column=10,pady=20,sticky='W')
+        root.mainloop()        
+        
     def bus_running_detail(self):
         root = Tk()
         w, h = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -592,57 +531,36 @@ class demo():
         t1.grid(row=1, column=0, columnspan=20, padx=w // 3)
         t2 = Label(root, text='Add Bus Running Details', bg='gray20', fg='green3', font='Arial 22 bold')
         t2.grid(row=2, column=0, columnspan=20, padx=w // 3, pady=20)
-
-
-        def datecorrect():
-            olddate = datef.get()
-            newdate = olddate[6:] + '-' + olddate[3:5] + '-' + olddate[:2]
-            return newdate
-
-        import sqlite3
-
-        con = sqlite3.connect('PYthonBusProj.db')
-        cur = con.cursor()
-
-
         Busid = Label(root, text='Bus ID', font='Arial 14')
         date = Label(root, text='Running Date', font='Arial 14')
+        jdate = StringVar()
+        jbusid = IntVar()
+        bidf = Entry(root,textvariable = jdate)
+        datef = Entry(root,textvariable = jbusid)
+        def insert():
+            def is_valid_date_format(date_str):
+                try:
+                    # Attempt to parse the date string using the specified format
+                    datetime.strptime(date_str, '%Y-%m-%d')
+                    return 1
+                except ValueError:
+                    # If an exception is raised, the format is not valid
+                    return 0
 
-        bidf = Entry(root)
-        datef = Entry(root)
+            if is_valid_date_format(jate.get()) and add_new_journey(db_path,jdate.get(),jbusid.get()):
+                messagebox.showinfo("Info", "Sucess")
+            else:
+                messagebox.showinfo("Info", "Sucess")
 
-
-        def addnew():
-            date = 0
-            date = cur.fetchall()
-            date = datecorrect()
-            cur.execute("""insert into runs(runs_busID,runs_date,seat_available)values({},'{}',{})""".format(bidf.get(), date,
-                                                                                                ))
-            con.commit()
-
-
-            op1 = Label(root, text='{} {} {} '.format(bidf.get(), datef.get()),
-                        font='Arial 12')
-            op1.grid(row=6, columnspan=13)
-            showinfo('Operator Entry Updated', 'Bus Running Record updated successfully')
-
-
-        def checking():
-            cur.execute("SELECT * FROM runs")
-            f=cur.fetchall()
-            print(f)
-
-        addb = Button(root, text='Add Run', bg='SpringGreen2', font='Arial 14', command=addnew)
-
-        #check_db = Button(root, text='Check', bg='SpringGreen2', font='Arial 14', command=checking)
-        #check_db.grid(row=10, column=11)
-
+        addb = Button(root, text='Add Run', bg='SpringGreen2', font='Arial 14', command=insert)
         Busid.grid(row=5, column=3)
         bidf.grid(row=5, column=4)
         date.grid(row=5, column=5)
         datef.grid(row=5, column=6)
         addb.grid(row=5, column=9)
-        
+
+
+
         def go_home():
             root.destroy()
             self.main_window()
@@ -661,46 +579,8 @@ class demo():
 
 
     
-    def add_station(self):
-        root = Tk()
-        h, w = root.winfo_screenheight(), root.winfo_screenwidth()
-        root.geometry('%dx%d+0+0' % (w, h))
-        bus = PhotoImage(file='../assets/bus.png')
-        fr1 = Frame(root)
-        fr1.grid(row=0, column=0, columnspan=10)
-        fr2 = Frame(root)
-        fr2.grid(row=1, column=0, columnspan=10)
-        Label(fr1, image=bus).grid(row=0, column=0, padx=w//2.4)
-        Label(fr2, text="Online Bus Booking System", font='arial 30 bold', fg="Red", bg="Light Blue").grid(row=1, column=2, pady=20)
-        t2 = Label(fr2, text='Add Station Details', bg='gray20', fg='green3', font='Arial 22 bold').grid(row=2, column=2, padx=w // 3, pady=20)
-        fr3=Frame(root)
-        fr3.grid(row=2, column=0, columnspan=10)
-        
-        Label(fr3,text="Sation ID", font='arial 12 ').grid(row=0,column=0,padx=10)
-        sId_entry=Entry(fr3)
-        sId_entry.grid(row=0,column=1,padx=10)
-        
-        Label(fr3,text="Sation Name", font='arial 12 ').grid(row=0,column=2,padx=10)
-        sName_entry=Entry(fr3)
-        sName_entry.grid(row=0,column=3,padx=10)
-        
-        add_button=Button(fr3,text="Add", bg="green2")
-        add_button.grid(row=0,column=4,padx=10)
-        
-        def go_home():
-            root.destroy()
-            self.main_window()
-        home=PhotoImage(file="../assets/home.png")
-        home_button = Button(fr3,image=home, command=go_home)
-        home_button.grid(row=0,column=5,pady=20,padx=5,sticky='W')
 
-        def go_back():
-            root.destroy()
-            self.admin_only()
-        back_button = Button(fr3,text="Back", command=go_back)
-        back_button.grid(row=0,column=6,pady=20,padx=5,sticky='W')
         
-        root.mainloop()
 
 
 
