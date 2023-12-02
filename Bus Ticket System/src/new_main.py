@@ -120,15 +120,16 @@ class demo():
                 Label(fr5, text="age ").grid(row=1, column=8, padx=10)
                 Entry(fr5).grid(row=1, column=9, padx=10)
                 
-                Button(fr5, text="Book Seat").grid(row=1, column=10, padx=10)
-            proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)
-
-    
-                
+                Button(fr5, text="Book Seat",font='bold', fg='black', bg='green2', command = show_book).grid(row=1, column=10, padx=10)
+            proceed_button=Button(fr4,text="Proceed to Book", font='arial 14 bold', bg="green4", fg="black",command = cred).grid(row=0,column=5)                
                         
         show_bus_button = Button(fr3, text="Show Bus",font='arial 12 bold', bg="green2", fg="green4", command=show_bus)
         show_bus_button.grid(row=5, column=2, pady=10)
         
+        def show_book():
+            root.destroy()
+            self.ticket_window()
+
         def go_back():
             root.destroy()
             self.main_window()
@@ -136,6 +137,37 @@ class demo():
         back_button.grid(row=5, column=4)
         root.mainloop()
 
+
+    #ticket booked window
+    def ticket_window(self):
+        root=Tk()
+        h,w=root.winfo_screenheight(),root.winfo_screenwidth()
+        root.geometry('%dx%d+0+0'%(w,h))
+        bus=PhotoImage(file='../assets/bus.png')
+        fr1=Frame(root)
+        fr1.grid(row=0,column=0,columnspan=10)
+        fr2=Frame(root)
+        fr2.grid(row=1,column=0,columnspan=10)
+        Label(fr1,image=bus).grid(row=0,column=0,padx=w//2.5)
+        Label(fr2,text='Online Bus Booking System',fg='red',bg='light Blue',font='arial 30 bold').grid(row=1,column=0,pady=40,padx=1)
+        Label(fr2,text='Bus Ticket',font='arial 15 bold').grid(row=2,column=0,padx=2.5)
+        #showinfo('info','Seat Booked.......')
+        fr=Frame(root,relief='groove',bd=3)
+        fr.grid(row=4,column=0,columnspan=50,padx=(w/15,0))
+        Label(fr,text='Passengers :',font='Arial 10 bold').grid(row=3,column=1)
+        Label(fr,text='Gender :',font='Arial 10 bold').grid(row=3,column=4)
+        Label(fr,text='No of seats:',font='Arial 10 bold').grid(row=4,column=1)
+        Label(fr,text='Phone:',font='Arial 10 bold').grid(row=4,column=4)
+        Label(fr,text='Age :',font='Arial 10 bold').grid(row=5,column=1)
+        Label(fr,text='Fare Rs :',font='Arial 10 bold').grid(row=5,column=4)
+        Label(fr,text='Booking Ref :',font='Arial 10 bold').grid(row=6,column=1)
+        Label(fr,text='Bus Detail :',font='Arial 10 bold').grid(row=6,column=4)
+        Label(fr,text='Travel on :',font='Arial 10 bold').grid(row=7,column=1)
+        Label(fr,text='Booked On :',font='Arial 10 bold').grid(row=7,column=4)
+        Label(fr,text='No of Seats:',font='Arial 10 bold').grid(row=8,column=1)
+        Label(fr,text='Boarding point :',font='Arial 10 bold').grid(row=8,column=4)
+        Label(fr,text='* Total amount of Rs 1000.00/- to be paid at the time of boarding',font='Arial 8').grid(row=9,columnspan=100,pady=10)
+        root.mainloop()
 
 #for checking bus details
     def check_bus_details(self):
