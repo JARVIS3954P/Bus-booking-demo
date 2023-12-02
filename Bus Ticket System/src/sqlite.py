@@ -6,14 +6,25 @@ def check_journey_details_with_seats(db_path, origin,destination, date):
     cursor = connection.cursor()
 
     cursor.execute('''
-        SELECT B.id AS bus_id, O.name AS operator_name, B.type AS bus_type,
-               J.avalable_seats, B.capacity, B.fare
-        FROM BUSES B
-        JOIN ROUTES R ON B.r_id = R.route_id
-        JOIN OPERATOR O ON B.op_id = O.operator_id
-        JOIN JOURNEY J ON B.id = J.bus_id
-        WHERE R.origin = ? AND R.destination = ? AND J.journey_date = ?;
-    ''', (origin, destination, date))
+		SELECT
+		    B.id AS bus_id,
+		    O.name AS operator_name,
+		    B.type AS bus_type,
+		    J.avalable_seats,
+		    B.capacity,
+		    B.fare
+		FROM
+		    BUSES B
+		    JOIN OPERATOR O ON B.op_id = O.operator_id
+		    JOIN JOURNEY J ON B.id = J.bus_id
+		    JOIN ROUTES R ON B.r_id = R.route_id
+		    JOIN STATION S1 ON R.origin = S1.id
+		    JOIN STATION S2 ON R.destination = S2.id
+		WHERE
+		    J.journey_date = ? 
+		    AND S1.name = ?  
+		    AND S2.name = ?; 
+    ''', (date,origin, destination))
 
     bus_details = cursor.fetchall()
 
@@ -52,23 +63,23 @@ def add_new_booking_with_seat_update(db_path, bus_id, passenger_name, sex, seats
     return 2 
 
 def check_booked_seat(number):
-	cursor.execute('''SELECT
-	    B.name AS passenger_name,
-	    R.origin AS journey_origin,
-	    R.destination AS journey_destination,
-	    J.journey_date AS journey_date,
-	    J.total_fare AS fare,
-	    B.seats AS seats,
-	    B.sex AS gender
-		FROM
-		    BOOKING B
-		JOIN
-		    JOURNEY J ON B.journey = J.journey_id
-		JOIN
-		    ROUTES R ON J.bus_id = R.route_id
-		WHERE
-		    B.mob_no = ?;
-		''',(number))
+    cursor.execute('''SELECT
+        B.name AS passenger_name,
+        R.origin AS journey_origin,
+        R.destination AS journey_destination,
+        J.journey_date AS journey_date,
+        J.total_fare AS fare,
+        B.seats AS seats,
+        B.sex AS gender
+        FROM
+            BOOKING B
+        JOIN
+            JOURNEY J ON B.journey = J.journey_id
+        JOIN
+            ROUTES R ON J.bus_id = R.route_id
+        WHERE
+            B.mob_no = ?;
+        ''',(number))
 
 def insert_station_data(db_path, station_id, station_name):
     connection = sqlite3.connect(db_path)
@@ -146,11 +157,11 @@ def update_operator(db_path, operator_id, name, address, phone_number, email):
     connection.commit()
     connection.close()
     return 1         
-def add_new_bus(db_path,bus_id, bus_type, capacity, fare, operator_id, route_id):
+def add_new_bus(db_path,bus_id, bus_type, capacity, fare, o_id, route_id):
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
     # Check if the operator exists in the OPERATOR table
-    cursor.execute('SELECT operator_id FROM OPERATOR WHERE operator_id = ?', (operator_id,))
+    cursor.execute('SELECT operator_id FROM OPERATOR WHERE operator_id = ?', (o_id,))
     operator_result = cursor.fetchone()
     if operator_result:
         operator_id = operator_result[0]
@@ -165,12 +176,12 @@ def add_new_bus(db_path,bus_id, bus_type, capacity, fare, operator_id, route_id)
     else:
         connection.close()
         return 0 
-def update_bus(db_path, bus_id, bus_type, capacity, fare, operator_name, route_id):
+def update_bus(db_path, bus_id, bus_type, capacity, fare, o_id, route_id):
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
     # Check if the operator exists in the OPERATOR table
-    cursor.execute('SELECT operator_id FROM OPERATOR WHERE name = ?', (operator_name,))
+    cursor.execute('SELECT operator_id FROM OPERATOR WHERE operator_id = ?', (o_id,))
     operator_result = cursor.fetchone()
 
     if operator_result:
@@ -197,27 +208,35 @@ def update_bus(db_path, bus_id, bus_type, capacity, fare, operator_name, route_i
     else:
         connection.close()
         return 0
+        
 def add_new_journey(db_path, journey_date, bus_id):
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
-    # Check if the bus is already on a journey
-    cursor.execute('SELECT journey_id FROM JOURNEY WHERE bus_id = ? AND journey_date = ?', (bus_id, journey_date))
-    existing_journey_result = cursor.fetchone()
-    if existing_journey_result:
+
+    try:
+        # Check if the bus is already on a journey
+        cursor.execute('SELECT journey_id FROM JOURNEY WHERE bus_id = ? AND journey_date = ?', (bus_id, journey_date))
+        existing_journey_result = cursor.fetchone()
+
+        if existing_journey_result:
+            return -1  # Bus is already on a journey
+
+        # Retrieve the bus capacity
+        cursor.execute('SELECT capacity FROM BUSES WHERE id = ?', (bus_id,))
+        bus_capacity_result = cursor.fetchone()
+
+        if not bus_capacity_result:
+            return 0  # Bus not found
+
+        bus_capacity = bus_capacity_result[0]
+        # Insert new journey details
+        cursor.execute('''
+            INSERT INTO JOURNEY (journey_id, journey_date, bus_id, avalable_seats)
+            VALUES ((SELECT COALESCE(MAX(journey_id), 0) + 1 FROM JOURNEY), ?, ?, ?)
+        ''', (journey_date, bus_id, bus_capacity))
+
+        connection.commit()
+        return 1  # Success
+
+    finally:
         connection.close()
-        return 0  # Bus is already on a journey
-    # Retrieve the bus capacity
-    cursor.execute('SELECT capacity FROM BUSES WHERE id = ?', (bus_id,))
-    bus_capacity_result = cursor.fetchone()
-    if not bus_capacity_result:
-        connection.close()
-        return -1  # Bus not found
-    bus_capacity = bus_capacity_result[0]
-    # Insert new journey details
-    cursor.execute('''
-        INSERT INTO JOURNEY (journey_id, journey_date, bus_id, avalable_seats)
-        VALUES ((SELECT COALESCE(MAX(journey_id), 0) + 1 FROM JOURNEY), ?, ?, ?)
-    ''', (journey_date, bus_id, bus_capacity))
-    connection.commit()
-    connection.close()
-    return 1  # Success

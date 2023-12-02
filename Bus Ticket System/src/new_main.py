@@ -22,7 +22,6 @@ class demo():
 
     def main_window(self):
         root = Tk()
-        root.title("Client/Admin Pannel")
         h, w = root.winfo_screenheight(), root.winfo_screenwidth()
         root.geometry('%dx%d+0+0' % (w, h))
         bus = PhotoImage(file='../assets/bus.png')
@@ -78,6 +77,7 @@ class demo():
         to = StringVar()
         frm = StringVar()
         date = StringVar()
+
         # Input boxes
         to_label = Label(fr3, text="To")
         to_label.grid(row=1, column=1, sticky='e')
@@ -91,17 +91,18 @@ class demo():
         journey_date_label.grid(row=3, column=1, sticky='e')
         journey_date_entry = Entry(fr3,textvariable=date)
         journey_date_entry.grid(row=3, column=2)
-        placeholder_label = Label(fr3, text="dd-mm-yyyy", fg="red")
+        placeholder_label = Label(fr3, text="yyyy-mm-dd", fg="red")
         placeholder_label.grid(row=4, column=2)
         
         def show_bus(tpl):
             
-            #check_journey_details_with_seats(to.get(),frm.get(),date.get())
+            #tpl = check_journey_details_with_seats(to.get(),frm.get(),date.get())
             Label(fr4, text="Select Bus",font='arial 16 bold', fg='dark slate gray').grid(row=0,column=0,padx=10)
             Label(fr4, text="Operator",font='arial 16 bold', fg='dark slate gray').grid(row=0,column=1,padx=10)
             Label(fr4, text="Bus Type",font='arial 16 bold', fg='dark slate gray').grid(row=0,column=2,padx=10)
             Label(fr4, text="Seat Available",font='arial 16 bold', fg='dark slate gray',).grid(row=0,column=3,padx=10)
             Label(fr4, text="Fare",font='arial 16 bold', fg='dark slate gray').grid(row=0,column=4,padx=25)
+            global selected_bus_id
             global selected_bus_id
             global busfare
             selected_bus_id = None
@@ -131,16 +132,17 @@ class demo():
                 mobile_number = StringVar() 
                 age = IntVar()
 
+
                 Label(fr5,text="FILL PASSENGER DETAILS TO BOOK THIS TICKET", font='arial 16 bold', fg='red',bg='light blue').grid(row=0,column=2,pady=20)
-                Label(fr6,text="Name").grid(row=1,column=0,padx=10)
+                Label(fr6,text="Name",font = 'arial 12 bold').grid(row=1,column=0,padx=10)
                 Entry(fr6,textvariable= passenger_name).grid(row=1,column=1,padx=15)
-                Label(fr6,text="Gender").grid(row=1,column=2,padx=10)
+                Label(fr6,text="Gender",font = 'arial 12 bold').grid(row=1,column=2,padx=10)
                 Entry(fr6,textvariable= sex).grid(row=1,column=3,padx=15)
-                Label(fr6,text="No of sets").grid(row=1,column=4,padx=10)
+                Label(fr6,text="No of sets",font = 'arial 12 bold').grid(row=1,column=4,padx=10)
                 Entry(fr6,textvariable=seats).grid(row=1,column=5,padx=15)
-                Label(fr6,text="mob no").grid(row=1,column=6,padx=10)
+                Label(fr6,text="mob no",font = 'arial 12 bold').grid(row=1,column=6,padx=10)
                 Entry(fr6,textvariable= mobile_number).grid(row=1,column=7,padx=15)
-                Label(fr6,text="age ").grid(row=1,column=8,padx=10)
+                Label(fr6,text="age ",font = 'arial 12 bold').grid(row=1,column=8,padx=10)
                 Entry(fr6,textvariable = age).grid(row=1,column=9,padx=15)
                 def insert():
                     tmp = self.process_arguments(bus_id,passenger_name.get(),sex.get(),seats.get(),mobile_number.get(),age.get(),f*seats.get()) 
@@ -164,13 +166,14 @@ class demo():
                 except ValueError:
                     # If an exception is raised, the format is not valid
                     return 0
-            tpl = self.process_arguments(frm.get(),to.get(),date.get())
             if is_valid_date_format(date.get()) == 0:
-                print()
+                messagebox.showinfo("Info", "Enter correct date format")
             else:
-                tpl = ((1,"Kamla","AC 2x2",24,30,1000),(2,"Hans","Non-AC 1x1",29,30,1400))
-                #tpl = check_journey_details_with_seats(db_path,tpl[0],tpl[1],tpl[2])
-                show_bus(tpl)                       
+                tpl = check_journey_details_with_seats(db_path,frm.get(),to.get(),date.get())
+                if(len(tpl) == 0):
+                    messagebox.showinfo("info", "NO avalable buses")
+                else:
+                    show_bus(tpl)                       
         show_bus_button = Button(fr3, text="Show Bus",font='arial 12 bold', bg="green2", fg="green4", command=insert)
         show_bus_button.grid(row=5, column=2, pady=10)
         
@@ -323,14 +326,14 @@ class demo():
 
         Routeid = Label(root, text='Route ID', font='Arial 14')
         origin_sation = Label(root, text='Origin Station', font='Arial 14')
-        destination_satation = Label(root, text='Destination Station', font='Arial 14')
+        destination_satation = Label(root, text='destination satation', font='Arial 14')
 
         routef = Entry(root,textvariable= routeid)
         o_sname = Entry(root,textvariable = o_sname)
         d_sname = Entry(root,textvariable = d_sname)
 
         def insert():
-            if add_new_route(db_path,routeid.get(),d_sname.get(),o_sname.get()):
+            if add_new_route(db_path,routeid.get(),o_sname.get(),d_sname.get()):
                 messagebox.showinfo("Info", "Sucess!")
             else:
                 messagebox.showinfo("Info","Error!")
@@ -537,9 +540,9 @@ class demo():
         Busid = Label(root, text='Bus ID', font='Arial 14')
         date = Label(root, text='Running Date', font='Arial 14')
         jdate = StringVar()
-        jbusid = IntVar()
-        bidf = Entry(root,textvariable = jdate)
-        datef = Entry(root,textvariable = jbusid)
+        jbusid = StringVar()
+        bidf = Entry(root,textvariable = jbusid)
+        datef = Entry(root,textvariable = jdate)
         def insert():
             def is_valid_date_format(date_str):
                 try:
@@ -549,11 +552,11 @@ class demo():
                 except ValueError:
                     # If an exception is raised, the format is not valid
                     return 0
-
-            if is_valid_date_format(jate.get()) and add_new_journey(db_path,jdate.get(),jbusid.get()):
+            a = add_new_journey(db_path,jdate.get(),jbusid.get())
+            if a  == 1:
                 messagebox.showinfo("Info", "Sucess")
-            else:
-                messagebox.showinfo("Info", "Sucess")
+            else:                
+                messagebox.showinfo("Info", "Error")
 
         addb = Button(root, text='Add Run', bg='SpringGreen2', font='Arial 14', command=insert)
         Busid.grid(row=5, column=3)
